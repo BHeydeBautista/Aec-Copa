@@ -63,7 +63,7 @@ export function armarTicket(
 	if (tipo.cupo) {
 		filas.push({
 			label: "Cupo",
-			valor: cupoPropio ? (cupoPropio.agotado ? "Completo" : `Quedan ${cupoPropio.disponibles}`) : String(tipo.cupo.total),
+			valor: cupoPropio?.agotado ? "Completo" : "Disponible",
 		});
 	}
 	if (tipo.requiereAcreditacion) filas.push({ label: "Acredita", valor: "N° socio" });

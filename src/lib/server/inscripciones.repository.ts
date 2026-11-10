@@ -37,8 +37,8 @@ export async function guardarInscripcion(registro: InscripcionRegistro, archivo:
 export async function obtenerCupo(): Promise<EstadoCupo> {
 	const total = obtenerTipoEntrada(CUPO_TIPO)?.cupo?.total ?? 0;
 	const ocupados = SCRIPT_URL ? await contarEnGoogle() : await contarLocal();
-	const disponibles = Math.max(0, total - ocupados);
-	return { tipo: CUPO_TIPO, total, ocupados, disponibles, agotado: disponibles === 0 };
+	// Las cantidades quedan del lado del servidor: al sitio solo le llega si hay o no lugar.
+	return { tipo: CUPO_TIPO, agotado: total - ocupados <= 0 };
 }
 
 // ─── Google Apps Script ─────────────────────────────────────────────────────────

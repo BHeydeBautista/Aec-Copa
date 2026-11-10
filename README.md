@@ -42,7 +42,26 @@ src/
 | Precio de Pileta Challenger después del cupo de 60 | `src/data/entradas.ts` → `precioSobreCupo` |
 | Backend de guardado (Google Sheet + Drive) | `docs/google-apps-script.gs` + variables de `.env.example` |
 
-## Modelo 3D del natatorio (Blender)
+## Hero: vuelo de dron (video con IA + scroll)
+
+El fondo del hero es un vuelo de dron sobre el natatorio que avanza cuadro a cuadro con el scroll.
+El video se generó con Higgsfield (modelo MiniMax H3, 8 s, 2K) usando dos fotos reales del club como
+cuadro inicial (vista aérea) y final (a nivel del agua). Los cuadros se extraen con Blender:
+
+```bash
+blender --background --python blender/scripts/extraer-cuadros.py -- <video.mp4> public/vuelo/h 1280 720 2 70
+blender --background --python blender/scripts/extraer-cuadros.py -- <video.mp4> public/vuelo/v 540 960 2 70
+```
+
+- `components/hero/vuelo/vuelo-dron.tsx`: dibuja la secuencia en un `<canvas>` según el scroll
+  (horizontal en computadora, vertical en celular) con carga progresiva.
+- `components/hero/vuelo/vuelo-config.ts`: carpetas y cantidad de cuadros.
+- El video original queda en `blender/salida/higgs/vuelo.mp4` (carpeta ignorada por git).
+
+## Modelo 3D del natatorio (Blender) — ya no se usa en el hero
+
+La escena 3D anterior (`components/hero/escena/` + scripts de Blender) queda en el proyecto como referencia;
+el hero ahora usa el vuelo de dron de arriba.
 
 El natatorio del hero se modela por script en Blender 5.2 a partir de las fotos del club,
 con assets CC0 de [Poly Haven](https://polyhaven.com) (texturas, cielo HDRI y sillas).

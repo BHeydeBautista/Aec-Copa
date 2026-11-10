@@ -5,7 +5,9 @@ export interface DatosTransferencia {
 	banco: string;
 	alias: string;
 	cbu: string;
-	cuit?: string;
+	/** Número de cuenta (caja de ahorro). */
+	cuenta?: string;
+	cuil?: string;
 }
 
 export interface MetodoPago {

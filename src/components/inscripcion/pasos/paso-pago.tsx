@@ -58,7 +58,8 @@ export function PasoPago({ ctrl }: { ctrl: InscripcionFormController }) {
 						<CopyField label="Titular" valor={transferencia.titular} />
 						<CopyField label="Banco" valor={transferencia.banco} />
 					</div>
-					{transferencia.cuit && <CopyField label="CUIT" valor={transferencia.cuit} />}
+					{transferencia.cuenta && <CopyField label="Caja de ahorro en pesos" valor={transferencia.cuenta} />}
+					{transferencia.cuil && <CopyField label="CUIL" valor={transferencia.cuil} />}
 				</div>
 			)}
 

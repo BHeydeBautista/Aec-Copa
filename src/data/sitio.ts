@@ -35,7 +35,7 @@ export const preguntasFrecuentes: PreguntaFrecuente[] = [
 		id: "cupo",
 		pregunta: "¿Qué pasa si se completa el cupo de Pileta Challenger?",
 		respuesta:
-			"Pileta Challenger tiene 60 lugares a precio preferencial. Una vez completos, las inscripciones siguientes se cobran al precio de Pileta General.",
+			"Pileta Challenger tiene cupo limitado a precio preferencial. Una vez completo, las inscripciones siguientes se cobran al precio de Pileta General.",
 	},
 	{
 		id: "socios",

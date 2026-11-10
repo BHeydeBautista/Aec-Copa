@@ -1,16 +1,14 @@
 import type { ConfiguracionPago } from "@/types";
 
-/**
- * ⚠️ COMPLETAR con los datos reales de la cuenta del club antes de publicar.
- * Mientras alias/CBU digan "COMPLETAR", el paso de pago muestra un aviso.
- */
+/** Cuenta de la Subcomisión de Natación Máster AEC para el pago de la clínica. */
 export const configuracionPago: ConfiguracionPago = {
 	transferencia: {
-		titular: "COMPLETAR",
-		banco: "COMPLETAR",
-		alias: "COMPLETAR",
-		cbu: "COMPLETAR",
-		cuit: undefined,
+		titular: "Hugo Ariel Gieco",
+		banco: "Naranja X",
+		alias: "NatacionMaster.AEC",
+		cbu: "4530000800019055475088",
+		cuenta: "1905547508",
+		cuil: "20312775213",
 	},
 	linkMercadoPago: null,
 	metodos: [

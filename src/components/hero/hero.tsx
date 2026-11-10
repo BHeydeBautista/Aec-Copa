@@ -2,9 +2,8 @@
 
 import { CalendarDays, MapPin } from "lucide-react";
 import { useInView } from "motion/react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { LogoImage } from "@/components/ui/logo-image";
 import { evento } from "@/data/evento";
@@ -15,28 +14,26 @@ import { formatearFechaLarga } from "@/lib/format";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { Countdown } from "./countdown";
-import { crearEstado, type EstadoEscena } from "./escena/estado-escena";
 import { TituloAnimado } from "./titulo-animado";
-
-// three.js solo en el cliente y en un chunk aparte para no frenar el primer render.
-const EscenaNatatorio = dynamic(() => import("./escena/escena-natatorio"), { ssr: false, loading: () => null });
+import VueloDron from "./vuelo/vuelo-dron";
 
 const TOTAL_SECCIONES = slidesHero.length;
 
 /**
- * Hero "noche en la pileta". La sección mide ~2.4 pantallas: el contenido queda fijo (sticky)
- * y el scroll mueve la cámara sobre el agua y cambia de "Copa Challenger" a "Clínica Meolans".
+ * Hero con vuelo de dron sobre el natatorio. La sección mide ~2.4 pantallas: el contenido queda fijo (sticky)
+ * y el scroll avanza el vuelo cuadro a cuadro y cambia de "Copa Challenger" a "Clínica Meolans".
  */
 export default function Hero() {
 	const seccionRef = useRef<HTMLElement>(null);
 	const stickyRef = useRef<HTMLDivElement>(null);
 	const barraRef = useRef<HTMLDivElement>(null);
-	const estadoRef = useRef<EstadoEscena>(crearEstado());
+	const estadoRef = useRef({ progreso: 0 });
 	const visible = useInView(seccionRef);
 	const reducirMovimiento = useReducedMotion();
 	const [escenaLista, setEscenaLista] = useState(false);
 	const [seccion, setSeccion] = useState(0);
 	const [copa, clinica] = slidesHero;
+	const alListo = useCallback(() => setEscenaLista(true), []);
 
 	// Entrada inicial (estilo "horizon"): logos, letras del título subiendo y líneas del subtítulo.
 	useGSAP(
@@ -91,7 +88,7 @@ export default function Hero() {
 	return (
 		<section ref={seccionRef} id="inicio" className="relative h-[240svh]">
 			<div ref={stickyRef} className="sticky top-0 isolate h-svh overflow-hidden">
-				{/* Escena 3D (con fondo de respaldo mientras carga) */}
+				{/* Vuelo de dron (con fondo de respaldo mientras carga el primer cuadro) */}
 				<div
 					aria-hidden
 					className="absolute inset-0 -z-20"
@@ -101,13 +98,7 @@ export default function Hero() {
 					aria-hidden
 					className={cn("absolute inset-0 -z-20 transition-opacity duration-1000", escenaLista ? "opacity-100" : "opacity-0")}
 				>
-					<EscenaNatatorio
-						eventSource={stickyRef}
-						estadoRef={estadoRef}
-						activo={visible}
-						reducirMovimiento={reducirMovimiento}
-						onListo={() => setEscenaLista(true)}
-					/>
+					<VueloDron progresoRef={estadoRef} activo={visible} reducirMovimiento={reducirMovimiento} onListo={alListo} />
 				</div>
 
 				{/* Viñeta para legibilidad */}
@@ -116,7 +107,7 @@ export default function Hero() {
 					className="pointer-events-none absolute inset-0 -z-10"
 					style={{
 						background:
-							"radial-gradient(70% 38% at 50% 44%, rgb(6 10 20 / 0.55) 0%, transparent 100%), linear-gradient(180deg, rgb(6 10 20 / 0.7) 0%, transparent 20%, transparent 80%, rgb(6 10 20 / 0.9) 100%)",
+							"radial-gradient(75% 45% at 50% 48%, rgb(6 10 20 / 0.55) 0%, rgb(6 10 20 / 0.28) 100%), linear-gradient(180deg, rgb(6 10 20 / 0.75) 0%, transparent 22%, transparent 72%, rgb(6 10 20 / 0.95) 100%)",
 					}}
 				/>
 
