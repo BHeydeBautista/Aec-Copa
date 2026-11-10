@@ -1,26 +1,173 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+/* Pantallas bajas (notebooks con zoom, celulares acostados): el hero se compacta. */
+@custom-variant bajo (@media (max-height: 760px));
+
+html {
+	scroll-behavior: smooth;
+	scroll-padding-top: 5rem;
+}
+
+html,
+body {
+	/* `clip` (no `hidden`) para no romper `position: sticky` */
+	overflow-x: clip;
+}
+
+/*
+ * Paleta derivada del logo AEC (celeste lavanda + negro) sobre un fondo "pileta de noche".
+ * Las variables shadcn (--background, --primary, --card...) quedan definidas para que los
+ * componentes que copies de 21st.dev funcionen sin tocar nada.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+	color-scheme: dark;
+
+	--brand: #8fa9d8; /* celeste del logo AEC */
+	--brand-strong: #5f7fbf;
+	--brand-2: #38d4f5; /* agua */
+	--brand-foreground: #070b16;
+
+	--background: #060a14;
+	--foreground: #eef2fb;
+	--surface: #0c1222;
+	--surface-2: #121a2e;
+	--card: #0c1222;
+	--card-foreground: #eef2fb;
+	--popover: #0c1222;
+	--popover-foreground: #eef2fb;
+	--primary: var(--brand);
+	--primary-foreground: var(--brand-foreground);
+	--secondary: #1a2338;
+	--secondary-foreground: #eef2fb;
+	--muted: #141c30;
+	--muted-foreground: #95a1bb;
+	--accent: #1a2338;
+	--accent-foreground: #eef2fb;
+	--destructive: #f2555a;
+	--success: #3ddc97;
+	--border: rgb(143 169 216 / 0.14);
+	--input: rgb(143 169 216 / 0.2);
+	--ring: var(--brand);
+	--radius: 0.875rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-surface: var(--surface);
+	--color-surface-2: var(--surface-2);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-success: var(--success);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-brand: var(--brand);
+	--color-brand-strong: var(--brand-strong);
+	--color-brand-2: var(--brand-2);
+	--color-brand-foreground: var(--brand-foreground);
+
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	--font-sans: var(--font-body);
+	--font-display: var(--font-heading);
+	--font-marcador: var(--font-scoreboard);
+	--font-mono: var(--font-mono-geist), ui-monospace, monospace;
+
+	--animate-shimmer: shimmer 2.4s linear infinite;
+	--animate-float-y: float-y 3s ease-in-out infinite;
+
+	@keyframes shimmer {
+		from {
+			background-position: 200% 0;
+		}
+		to {
+			background-position: -200% 0;
+		}
+	}
+	@keyframes float-y {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(6px);
+		}
+	}
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@layer base {
+	* {
+		border-color: var(--border);
+	}
+	body {
+		background: var(--background);
+		color: var(--foreground);
+		font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+		-webkit-font-smoothing: antialiased;
+	}
+	::selection {
+		background: color-mix(in srgb, var(--brand) 40%, transparent);
+	}
+	:focus-visible {
+		outline: 2px solid var(--ring);
+		outline-offset: 2px;
+	}
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+	.text-gradient-brand {
+		background: linear-gradient(100deg, #ffffff 10%, var(--brand) 55%, var(--brand-2) 95%);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
+	.bg-grid {
+		background-image:
+			linear-gradient(to right, rgb(143 169 216 / 0.06) 1px, transparent 1px),
+			linear-gradient(to bottom, rgb(143 169 216 / 0.06) 1px, transparent 1px);
+		background-size: 48px 48px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* Azulejo de pileta: fondo claro con juntas. */
+@utility bg-azulejo {
+	background-color: #e3f0f1;
+	background-image:
+		linear-gradient(#cbe0e3 1px, transparent 1px),
+		linear-gradient(90deg, #cbe0e3 1px, transparent 1px);
+	background-size: 28px 28px;
+}
+
+/* Título del hero: se ajusta al ancho Y al alto disponible (nunca se pisa con el resto). */
+@utility titulo-hero {
+	font-size: clamp(2.4rem, min(12.5vw, 12.5svh), 8.5rem);
 }
