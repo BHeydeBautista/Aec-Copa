@@ -112,10 +112,21 @@ function obtenerContextoFilaSeleccionada_() {
     indices[nombre] = indice;
   });
   const valores = hoja.getRange(fila, 1, 1, hoja.getLastColumn()).getValues()[0];
-  return { hoja: hoja, fila: fila, indices: indices, valores: valores };
+  return { hoja: hoja, fila: fila, cabeceras: cabeceras, indices: indices, valores: valores };
 }
 
 function valorFila_(contexto, columna) {
+  if (columna === "urlSitio") {
+    const urls = [];
+    contexto.cabeceras.forEach(function (cabecera, indice) {
+      if (cabecera === columna && contexto.valores[indice]) urls.push(contexto.valores[indice]);
+    });
+    for (let i = urls.length - 1; i >= 0; i--) {
+      const url = String(urls[i]).trim().replace(/\/+$/, "");
+      if (/^https:\/\/[^/]+$/i.test(url)) return url;
+    }
+    return urls.length ? String(urls[urls.length - 1]).trim() : "";
+  }
   const indice = contexto.indices[columna];
   return indice === undefined ? "" : contexto.valores[indice];
 }
@@ -130,7 +141,7 @@ function contarCuposPromocionalesAprobados_(hoja, indices) {
 }
 
 function urlEntrada_(sitioUrl, id, token) {
-  const base = String(sitioUrl || "").replace(/\/+$/, "");
+  const base = String(sitioUrl || "").trim().replace(/\/+$/, "");
   if (!/^https:\/\/[^/]+$/i.test(base) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(base)) {
     throw new Error("Falta una URL pública válida del sitio. Configurá NEXT_PUBLIC_SITE_URL y registrá de nuevo.");
   }
