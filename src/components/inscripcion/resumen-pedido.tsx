@@ -9,13 +9,13 @@ export function ResumenPedido({ ctrl }: { ctrl: InscripcionFormController }) {
 	const { tipo, cantidad, precioUnitario, total, cupoAgotado } = ctrl;
 
 	return (
-		<aside className="rounded-3xl border border-border bg-surface/80 p-6 backdrop-blur lg:sticky lg:top-28">
-			<p className="text-xs font-semibold tracking-[0.2em] text-muted-foreground uppercase">Resumen</p>
+		<aside className="rounded-2xl border border-border/80 bg-surface/45 p-5 lg:sticky lg:top-28 sm:p-6">
+			<p className="text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">Tu reserva</p>
 
 			{tipo ? (
 				<>
 					<div className="mt-4 flex items-start gap-3">
-						<span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand/15 text-brand">
+						<span className="grid size-10 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
 							<Ticket className="size-5" />
 						</span>
 						<div>
@@ -30,7 +30,7 @@ export function ResumenPedido({ ctrl }: { ctrl: InscripcionFormController }) {
 							Cupo preferencial completo: se aplica el precio general.
 						</p>
 					)}
-					<div className="mt-5 flex items-baseline justify-between border-t border-border pt-5">
+					<div className="mt-5 flex items-baseline justify-between border-t border-border/80 pt-5">
 						<span className="text-sm text-muted-foreground">Total</span>
 						<span className="font-display text-3xl font-extrabold tabular-nums">{formatearPrecio(total)}</span>
 					</div>
@@ -39,7 +39,7 @@ export function ResumenPedido({ ctrl }: { ctrl: InscripcionFormController }) {
 				<p className="mt-4 text-sm text-muted-foreground">Elegí una entrada para ver el total.</p>
 			)}
 
-			<ul className="mt-6 space-y-2 border-t border-border pt-5 text-sm text-muted-foreground">
+			<ul className="mt-6 space-y-3 border-t border-border/80 pt-5 text-sm leading-6 text-muted-foreground">
 				<li className="flex items-center gap-2">
 					<CalendarDays className="size-4 text-brand-2" /> Clínica: {formatearFechaLarga(evento.fechaClinica)}
 				</li>

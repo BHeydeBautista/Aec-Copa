@@ -18,6 +18,7 @@ src/
 │  ├─ inscripcion/page.tsx   # Formulario (?tipo=pileta-challenger preselecciona)
 │  └─ api/
 │     ├─ inscripcion/route.ts  # POST multipart: valida, recalcula precio y guarda
+│     ├─ verificacion-email/route.ts # Verificación de email antes de registrar
 │     └─ cupos/route.ts        # GET cupo en vivo de Pileta Challenger
 ├─ components/               # Toda la UI y su lógica de presentación
 │  ├─ layout/ (navbar, footer Systemium)
@@ -93,7 +94,11 @@ Se pausa cuando el hero sale de pantalla y respeta `prefers-reduced-motion`.
 - **Desarrollo**: sin variables de entorno, se guarda en `.data/inscripciones.json` y `.data/comprobantes/`.
 - **Producción**: Vercel no permite escribir archivos → configurar Google Apps Script (instrucciones en
   `docs/google-apps-script.gs`). Cada inscripción queda como fila en una Google Sheet y el comprobante en Drive.
-  El precio se recalcula siempre en el servidor y el cupo se cuenta excluyendo los `rechazado`.
+  El Apps Script envía un código de seis dígitos con GmailApp; se verifica antes de habilitar el envío y el token
+  se valida nuevamente al guardar. El precio se recalcula siempre en el servidor y el cupo se cuenta excluyendo
+  los `rechazado`.
+- No se usa Google Forms: el formulario propio admite el comprobante y valida el acceso a la bandeja de email
+  en el mismo flujo. Esta validación no acredita la identidad legal de la persona.
 
 ## Usar componentes de 21st.dev
 

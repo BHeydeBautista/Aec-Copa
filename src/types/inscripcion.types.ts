@@ -45,7 +45,7 @@ export interface InscripcionRespuestaError {
 export type InscripcionRespuesta = InscripcionRespuestaOk | InscripcionRespuestaError;
 
 export interface PasoFormulario {
-	id: "datos" | "entrada" | "pago" | "comprobante";
+	id: "datos" | "entrada" | "verificacion" | "pago" | "comprobante";
 	titulo: string;
 	descripcion: string;
 }

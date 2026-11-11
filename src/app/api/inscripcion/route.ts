@@ -16,6 +16,10 @@ export async function POST(request: Request) {
 		const v = formData.get(clave);
 		return typeof v === "string" ? v : undefined;
 	};
+	const emailVerificationToken = texto("emailVerificationToken");
+	if (!emailVerificationToken) {
+		return responder({ ok: false, error: "Verificá tu email antes de enviar la inscripción." }, 422);
+	}
 
 	const resultado = inscripcionSchema.safeParse({
 		tipoEntrada: texto("tipoEntrada"),
@@ -75,7 +79,7 @@ export async function POST(request: Request) {
 			estado: "pendiente",
 		};
 
-		await guardarInscripcion(registro, datos.comprobante);
+		await guardarInscripcion(registro, datos.comprobante, emailVerificationToken);
 		return responder({ ok: true, id, total: registro.total }, 201);
 	} catch (error) {
 		console.error("[inscripcion] Error al guardar", error);

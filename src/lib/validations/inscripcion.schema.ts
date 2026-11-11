@@ -87,6 +87,7 @@ export type InscripcionFormValues = z.output<typeof inscripcionSchema>;
 export const camposPorPaso = {
 	entrada: ["tipoEntrada", "cantidad", "numeroSocio"],
 	datos: ["nombre", "apellido", "dni", "email", "telefono", "club"],
+	verificacion: [],
 	pago: ["metodoPago"],
 	comprobante: ["comprobante", "observaciones", "aceptaTerminos"],
 } as const satisfies Record<string, readonly (keyof InscripcionFormInput)[]>;

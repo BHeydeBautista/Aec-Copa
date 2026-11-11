@@ -12,12 +12,14 @@ import { PasoComprobante } from "./pasos/paso-comprobante";
 import { PasoDatos } from "./pasos/paso-datos";
 import { PasoEntrada } from "./pasos/paso-entrada";
 import { PasoPago } from "./pasos/paso-pago";
+import { PasoVerificacionEmail } from "./pasos/paso-verificacion-email";
 import { ResumenPedido } from "./resumen-pedido";
 import { Stepper } from "./stepper";
 
 const PASOS: Record<InscripcionFormController["pasoId"], (ctrl: InscripcionFormController) => ReactNode> = {
 	entrada: (ctrl) => <PasoEntrada ctrl={ctrl} />,
 	datos: (ctrl) => <PasoDatos ctrl={ctrl} />,
+	verificacion: (ctrl) => <PasoVerificacionEmail ctrl={ctrl} />,
 	pago: (ctrl) => <PasoPago ctrl={ctrl} />,
 	comprobante: (ctrl) => <PasoComprobante ctrl={ctrl} />,
 };
@@ -31,7 +33,21 @@ export default function InscripcionForm() {
 
 function InscripcionFormInterno({ tipoInicial }: { tipoInicial?: Parameters<typeof useInscripcionForm>[0] }) {
 	const ctrl = useInscripcionForm(tipoInicial);
-	const { paso, pasoId, indicePaso, estadoPasos, esUltimoPaso, siguiente, anterior, irAPaso, enviar, enviando, resultado, reiniciar } = ctrl;
+	const {
+		paso,
+		pasoId,
+		indicePaso,
+		estadoPasos,
+		esUltimoPaso,
+		siguiente,
+		anterior,
+		irAPaso,
+		enviar,
+		enviando,
+		procesandoPaso,
+		resultado,
+		reiniciar,
+	} = ctrl;
 	const formRef = useRef<HTMLFormElement>(null);
 	const pasoPrevio = useRef(indicePaso);
 
@@ -55,8 +71,13 @@ function InscripcionFormInterno({ tipoInicial }: { tipoInicial?: Parameters<type
 
 	return (
 		<div className="grid gap-8 lg:grid-cols-[1fr_340px] lg:items-start">
-			<form ref={formRef} onSubmit={onSubmit} noValidate className="scroll-mt-28 rounded-3xl border border-border bg-surface/80 p-5 backdrop-blur sm:p-8">
-				<Stepper pasos={estadoPasos} indiceActual={indicePaso} onIrA={irAPaso} deshabilitado={enviando} />
+			<form
+				ref={formRef}
+				onSubmit={onSubmit}
+				noValidate
+				className="scroll-mt-28 rounded-2xl border border-border/90 bg-surface/70 p-5 sm:p-8"
+			>
+				<Stepper pasos={estadoPasos} indiceActual={indicePaso} onIrA={irAPaso} deshabilitado={enviando || procesandoPaso} />
 
 				<div className="mt-10">
 					<AnimatePresence mode="wait" initial={false}>
@@ -67,21 +88,31 @@ function InscripcionFormInterno({ tipoInicial }: { tipoInicial?: Parameters<type
 							exit={{ opacity: 0, x: -24 }}
 							transition={{ duration: 0.25 }}
 						>
-							<h2 className="font-display text-2xl font-bold">{paso.titulo}</h2>
-							<p className="mt-1 mb-6 text-sm text-muted-foreground">{paso.descripcion}</p>
+							<h2 className="font-display text-2xl font-semibold tracking-tight">{paso.titulo}</h2>
+							<p className="mt-1 mb-6 text-sm leading-6 text-muted-foreground">{paso.descripcion}</p>
 							{PASOS[pasoId](ctrl)}
 						</motion.div>
 					</AnimatePresence>
 				</div>
 
-				<div className="mt-10 flex items-center justify-between gap-3 border-t border-border pt-6">
-					<Button variant="ghost" onClick={anterior} disabled={indicePaso === 0 || enviando} className={indicePaso === 0 ? "invisible" : undefined}>
+				<div className="mt-10 flex items-center justify-between gap-3 border-t border-border/80 pt-6">
+					<Button variant="ghost" onClick={anterior} disabled={indicePaso === 0 || enviando || procesandoPaso} className={indicePaso === 0 ? "invisible" : undefined}>
 						<ArrowLeft /> Atrás
 					</Button>
-					<Button type="submit" variant={esUltimoPaso ? "water" : "default"} disabled={enviando} className="min-w-40">
+					<Button
+						type="submit"
+						variant={esUltimoPaso ? "water" : "default"}
+						disabled={enviando || procesandoPaso}
+						className="min-w-40 rounded-lg shadow-none hover:translate-y-0 hover:shadow-none"
+					>
 						{enviando ? (
 							<>
 								<LoaderCircle className="animate-spin" /> Enviando…
+							</>
+						) : procesandoPaso ? (
+							<>
+								<LoaderCircle className="animate-spin" />
+								{pasoId === "datos" ? "Enviando código…" : pasoId === "verificacion" ? "Verificando…" : "Continuando…"}
 							</>
 						) : esUltimoPaso ? (
 							<>

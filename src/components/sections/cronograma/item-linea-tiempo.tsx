@@ -22,15 +22,15 @@ export function ItemLineaTiempoView({ item }: { item: ItemLineaTiempo }) {
 
 	if (item.tipo === "dia") {
 		return (
-			<article style={estilo} className="item-tl relative h-full w-[58vw] shrink-0 sm:w-[30vw] lg:w-[22vw]">
+			<article style={estilo} className="item-tl relative h-full w-[68vw] shrink-0 sm:w-[38vw] lg:w-[30vw]">
 				{/* Placa del día sobre la línea, como el número de andarivel en la pared */}
 				<div className="tl-dot absolute top-1/2 left-0 flex -translate-y-1/2 items-stretch overflow-hidden rounded-md bg-[var(--tl-tinta)] text-white">
 					<span className="px-3 py-1.5 font-marcador text-5xl leading-none font-extrabold sm:text-6xl">{dia}</span>
 					<span className="flex items-center bg-[var(--acento)] px-2.5 font-marcador text-lg font-semibold tracking-wider uppercase">{mes}</span>
 				</div>
-				<div className="absolute top-[8%] left-0 pr-6">
+				<div className="absolute top-[8%] right-0 bottom-[56%] left-0 pr-6">
 					<Revelar className="text-[11px] font-bold tracking-[0.22em] text-[var(--acento)] uppercase">{ETIQUETA[item.categoria]}</Revelar>
-					<Revelar className="mt-2 font-display text-[7.5vw] leading-[0.95] font-bold sm:text-[3.2vw] lg:text-[2.4vw]">{item.titulo}</Revelar>
+					<Revelar className="mt-2 line-clamp-2 font-display text-[clamp(1.75rem,3vw,3rem)] leading-[1.02] font-bold">{item.titulo}</Revelar>
 					{item.lugar && <Revelar className="mt-2 text-sm text-[var(--tl-tenue)]">{item.lugar}</Revelar>}
 				</div>
 			</article>

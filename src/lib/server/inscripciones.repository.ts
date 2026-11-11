@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { obtenerTipoEntrada } from "@/data/entradas";
@@ -27,12 +28,37 @@ export function generarIdInscripcion(): string {
 	return `AEC-${tiempo}${azar}`;
 }
 
-export async function guardarInscripcion(registro: InscripcionRegistro, archivo: File): Promise<void> {
+export async function guardarInscripcion(registro: InscripcionRegistro, archivo: File, tokenEmail: string): Promise<void> {
 	if (SCRIPT_URL) {
-		await guardarEnGoogle(registro, archivo);
+		await guardarEnGoogle(registro, archivo, tokenEmail);
 		return;
 	}
 	await guardarLocal(registro, archivo);
+}
+
+export async function gestionarVerificacionEmail(
+	accion: "solicitar" | "confirmar",
+	email: string,
+	codigo?: string,
+): Promise<string | undefined> {
+	if (!SCRIPT_URL) throw new Error("Falta configurar GOOGLE_SCRIPT_URL para verificar emails.");
+	const payload = {
+		secret: SCRIPT_SECRET,
+		action: accion === "solicitar" ? "solicitar-codigo-email" : "confirmar-codigo-email",
+		email,
+		...(accion === "solicitar" ? { codigo: randomInt(100000, 1000000).toString() } : { codigo }),
+	};
+	const response = await fetch(SCRIPT_URL, {
+		method: "POST",
+		headers: { "Content-Type": "text/plain;charset=utf-8" },
+		body: JSON.stringify(payload),
+		cache: "no-store",
+	});
+	const data = (await response.json().catch(() => null)) as { ok?: boolean; error?: string; token?: string } | null;
+	if (!response.ok || !data?.ok) {
+		throw new Error(data?.error ?? `Apps Script respondió ${response.status}`);
+	}
+	return data.token;
 }
 
 export async function obtenerCupo(): Promise<EstadoCupo> {
@@ -49,7 +75,7 @@ export async function obtenerCupo(): Promise<EstadoCupo> {
 
 // ─── Google Apps Script ─────────────────────────────────────────────────────────
 
-async function guardarEnGoogle(registro: InscripcionRegistro, archivo: File) {
+async function guardarEnGoogle(registro: InscripcionRegistro, archivo: File, tokenEmail: string) {
 	const base64 = Buffer.from(await archivo.arrayBuffer()).toString("base64");
 	const res = await fetch(SCRIPT_URL!, {
 		method: "POST",
@@ -58,6 +84,7 @@ async function guardarEnGoogle(registro: InscripcionRegistro, archivo: File) {
 			action: "inscripcion",
 			secret: SCRIPT_SECRET,
 			registro,
+			emailVerificationToken: tokenEmail,
 			archivo: { nombre: archivo.name, tipo: archivo.type, base64 },
 		}),
 		cache: "no-store",
