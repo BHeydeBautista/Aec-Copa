@@ -20,6 +20,7 @@ export interface TipoEntrada {
 	zona: ZonaEntrada;
 	nombre: string;
 	descripcion: string;
+	observacion?: string;
 	precio: number;
 	beneficios: string[];
 	destacado?: boolean;

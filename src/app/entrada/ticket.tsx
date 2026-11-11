@@ -4,6 +4,7 @@ import { evento } from "@/data/evento";
 import { obtenerTipoEntrada } from "@/data/entradas";
 import type { EntradaVerificada } from "@/types";
 import { formatearFechaLarga, formatearPrecio } from "@/lib/format";
+import { DescargarTicket } from "./descargar-ticket";
 
 export function EntradaConfirmada({
 	entrada,
@@ -35,12 +36,17 @@ export function EntradaConfirmada({
 					</p>
 				</header>
 
-				<article className="mx-auto grid max-w-xl gap-7 rounded-3xl border border-slate-200 bg-[#fbfcfd] p-6 text-slate-900 shadow-2xl sm:grid-cols-[1fr_auto] sm:p-8">
+				<article id="ticket-imprimible" className="mx-auto grid max-w-xl gap-7 rounded-3xl border border-slate-200 bg-[#fbfcfd] p-6 text-slate-900 shadow-2xl sm:grid-cols-[1fr_auto] sm:p-8">
 					<div>
 						<p className="text-xs font-semibold tracking-[0.22em] text-slate-500 uppercase">Copa Challenger 2026</p>
 						<p className="mt-3 font-mono text-sm font-semibold tracking-wider">{entrada.id}</p>
 						<h2 className="mt-5 text-2xl font-bold">{entrada.nombre} {entrada.apellido}</h2>
 						<p className="mt-2 text-sm text-slate-600">{tipo?.nombre ?? entrada.tipoEntrada}</p>
+						{tipo?.observacion && (
+							<p className="mt-3 rounded-lg border border-amber-700/30 bg-amber-100/70 px-3 py-2 text-sm leading-5 text-amber-950">
+								{tipo.observacion}
+							</p>
+						)}
 
 						<dl className="mt-6 space-y-3 border-t border-dashed border-slate-300 pt-5 text-sm">
 							<div className="flex justify-between gap-4">
@@ -76,7 +82,8 @@ export function EntradaConfirmada({
 					</div>
 				</article>
 
-				<div className="mt-6 text-center">
+				<div className="mt-6 flex flex-col items-center gap-5 text-center print:hidden">
+					<DescargarTicket />
 					<Link href="/#precios" className="text-sm font-medium text-brand underline-offset-4 hover:underline">
 						Volver a los tickets del evento
 					</Link>

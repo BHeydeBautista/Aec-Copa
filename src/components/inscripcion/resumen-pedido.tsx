@@ -23,6 +23,7 @@ export function ResumenPedido({ ctrl }: { ctrl: InscripcionFormController }) {
 							<p className="text-sm text-muted-foreground">
 								{cantidad} × {formatearPrecio(precioUnitario)}
 							</p>
+							{tipo.observacion && <p className="mt-2 text-xs leading-5 text-amber-200">{tipo.observacion}</p>}
 						</div>
 					</div>
 					{cupoAgotado && (

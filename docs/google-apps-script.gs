@@ -153,15 +153,18 @@ function enviarEntrada_(contexto, token) {
   const email = String(valorFila_(contexto, "email"));
   const nombre = [valorFila_(contexto, "nombre"), valorFila_(contexto, "apellido")].filter(Boolean).join(" ");
   const entrada = String(valorFila_(contexto, "tipoEntrada"));
+  const observacion = entrada === "pileta-challenger"
+    ? "El nadador de la Copa Challenger queda a observación de la organización."
+    : "";
   const url = urlEntrada_(valorFila_(contexto, "urlSitio"), id, token);
   const enlace = '<a href="' + url + '" style="display:inline-block;padding:12px 20px;background:#1e3a5f;color:#fff;text-decoration:none;border-radius:8px">Ver mi entrada y QR</a>';
   GmailApp.sendEmail(
     email,
     "Pago confirmado · Entrada Copa Challenger AEC",
-    "Hola " + nombre + ". Confirmamos tu pago para la Copa Challenger AEC. Tu código es " + id + ". Abrí tu entrada: " + url,
+    "Hola " + nombre + ". Confirmamos tu pago para la Copa Challenger AEC. " + observacion + " Tu código es " + id + ". Abrí tu entrada: " + url,
     {
       name: "Atlético Echagüe Club · Natación Máster",
-      htmlBody: "<p>Hola " + htmlSeguro_(nombre) + ",</p><p>Confirmamos tu pago. Tu inscripción para <strong>" + htmlSeguro_(entrada) + "</strong> ya está aprobada.</p>" + enlace + "<p>Código de entrada: <strong>" + htmlSeguro_(id) + "</strong></p><p>El QR se valida en línea; guardá este correo para el ingreso.</p>",
+      htmlBody: "<p>Hola " + htmlSeguro_(nombre) + ",</p><p>Confirmamos tu pago. Tu inscripción para <strong>" + htmlSeguro_(entrada) + "</strong> ya está aprobada.</p>" + (observacion ? "<p><strong>" + htmlSeguro_(observacion) + "</strong></p>" : "") + enlace + "<p>Código de entrada: <strong>" + htmlSeguro_(id) + "</strong></p><p>El QR se valida en línea; guardá este correo para el ingreso.</p>",
     },
   );
 }
@@ -470,6 +473,7 @@ function obtenerEntrada_(parametros) {
   if (!fila || fila[indices.estado] !== "aprobado" || fila[indices.ticketToken] !== parametros.token) {
     return json_({ ok: false });
   }
+  const contexto = { cabeceras: cabeceras, indices: indices, valores: fila };
 
   return json_({
     ok: true,
@@ -480,7 +484,7 @@ function obtenerEntrada_(parametros) {
       tipoEntrada: fila[indices.tipoEntrada],
       cantidad: Number(fila[indices.cantidad]) || 1,
       total: Number(fila[indices.total]) || 0,
-      urlSitio: fila[indices.urlSitio],
+      urlSitio: valorFila_(contexto, "urlSitio"),
     },
   });
 }

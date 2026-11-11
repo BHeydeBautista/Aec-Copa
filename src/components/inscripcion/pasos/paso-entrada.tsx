@@ -43,6 +43,7 @@ export function PasoEntrada({ ctrl }: { ctrl: InscripcionFormController }) {
 									/>
 								</span>
 								<span className="font-semibold">{t.nombre}</span>
+								{t.observacion && <span className="text-xs leading-5 text-amber-200">{t.observacion}</span>}
 								<span className="font-display text-xl font-bold tabular-nums">{formatearPrecio(precio)}</span>
 								{t.cupo && cupo?.tipo === t.id && (
 									<span className={cn("text-xs", cupo.pocosDisponibles && !cupo.agotado ? "font-medium text-amber-300" : "text-muted-foreground")}>

@@ -61,7 +61,7 @@ function InscripcionFormInterno({ tipoInicial }: { tipoInicial?: Parameters<type
 		}
 	}, [indicePaso]);
 
-	if (resultado) return <InscripcionExito resultado={resultado} onNueva={reiniciar} />;
+	if (resultado) return <InscripcionExito resultado={resultado} observacion={ctrl.tipo?.observacion} onNueva={reiniciar} />;
 
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();

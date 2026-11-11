@@ -15,6 +15,7 @@ export const tiposEntrada: TipoEntrada[] = [
 		zona: "pileta",
 		nombre: "Pileta Challenger",
 		descripcion: "Precio especial para nadadores inscriptos en la Copa Challenger.",
+		observacion: "Nadador de la Copa Challenger: queda a observación de la organización.",
 		precio: 15000,
 		etiqueta: "Cupo limitado",
 		destacado: true,

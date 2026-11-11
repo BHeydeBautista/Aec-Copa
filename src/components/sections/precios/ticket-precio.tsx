@@ -111,6 +111,11 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 				<div className="mt-4 text-center">
 					<h3 className="text-lg leading-tight font-semibold tracking-[0.12em] uppercase">{tipo.nombre}</h3>
 					<p className="mt-1 text-[11px] tracking-[0.06em] text-[#1b2233]/60 uppercase">{tipo.descripcion}</p>
+					{tipo.observacion && (
+						<p className="mt-2 border border-amber-700/35 bg-amber-100/60 px-2 py-1 text-[10px] font-semibold leading-4 text-amber-900 uppercase">
+							{tipo.observacion}
+						</p>
+					)}
 					{tipo.etiqueta && (
 						<p className="mt-2 text-[11px] font-semibold tracking-[0.22em] text-[#cf3a44] uppercase">
 							<span aria-hidden>*** </span>

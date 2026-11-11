@@ -171,3 +171,50 @@ body {
 @utility titulo-hero {
 	font-size: clamp(2.4rem, min(12.5vw, 12.5svh), 8.5rem);
 }
+
+@media print {
+	@page {
+		size: 90mm 180mm;
+		margin: 0;
+	}
+
+	html,
+	body {
+		width: 90mm !important;
+		height: 180mm !important;
+		min-height: 180mm !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		overflow: hidden !important;
+		background: #fff !important;
+	}
+
+	body * {
+		visibility: hidden !important;
+	}
+
+	#ticket-imprimible,
+	#ticket-imprimible * {
+		visibility: visible !important;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+
+	#ticket-imprimible {
+		position: fixed !important;
+		inset: 0 auto auto 0 !important;
+		display: grid !important;
+		grid-template-columns: minmax(0, 1fr) !important;
+		width: 90mm !important;
+		max-width: none !important;
+		gap: 5mm !important;
+		margin: 0 !important;
+		padding: 8mm !important;
+		border: 0 !important;
+		border-radius: 0 !important;
+		background: #fbfcfd !important;
+		color: #0f172a !important;
+		box-shadow: none !important;
+		break-inside: avoid;
+	}
+}

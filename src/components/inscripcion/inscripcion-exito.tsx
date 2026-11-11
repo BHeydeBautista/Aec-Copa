@@ -10,10 +10,11 @@ import { CopyField } from "./copy-field";
 
 interface InscripcionExitoProps {
 	resultado: InscripcionRespuestaOk;
+	observacion?: string;
 	onNueva: () => void;
 }
 
-export function InscripcionExito({ resultado, onNueva }: InscripcionExitoProps) {
+export function InscripcionExito({ resultado, observacion, onNueva }: InscripcionExitoProps) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, scale: 0.96 }}
@@ -33,6 +34,7 @@ export function InscripcionExito({ resultado, onNueva }: InscripcionExitoProps) 
 			<p className="mt-3 text-muted-foreground">
 				Recibimos tus datos y el comprobante por {formatearPrecio(resultado.total)}. La inscripción queda pendiente hasta que la organización confirme el pago.
 			</p>
+			{observacion && <p className="mt-4 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm leading-6 text-amber-100">{observacion}</p>}
 			<div className="mt-6 w-full text-left">
 				<CopyField label="Código de seguimiento" valor={resultado.id} destacado />
 			</div>
