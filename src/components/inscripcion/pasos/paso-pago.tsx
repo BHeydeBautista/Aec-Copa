@@ -53,7 +53,7 @@ export function PasoPago({ ctrl }: { ctrl: InscripcionFormController }) {
 			{metodo === "transferencia" && (
 				<div className="flex flex-col gap-2.5">
 					<CopyField label="Alias" valor={transferencia.alias} destacado />
-					<CopyField label="CBU / CVU" valor={transferencia.cbu} />
+					<CopyField label="CBU" valor={transferencia.cbu} />
 					<div className="grid gap-2.5 sm:grid-cols-2">
 						<CopyField label="Titular" valor={transferencia.titular} />
 						<CopyField label="Banco" valor={transferencia.banco} />

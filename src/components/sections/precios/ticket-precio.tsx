@@ -80,7 +80,10 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 		>
 			<article
 				aria-label={`Entrada ${tipo.nombre}`}
-				className="relative overflow-hidden bg-[#fbfcfd] px-6 pt-8 pb-7 font-mono text-[#1b2233]"
+				className={cn(
+					"relative overflow-hidden bg-[#fbfcfd] px-6 pt-8 pb-7 font-mono text-[#1b2233]",
+					ticket.pocosDisponibles && "border-2 border-amber-400",
+				)}
 				style={papel}
 			>
 				<header className="text-center">
@@ -124,7 +127,9 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 						<li key={f.label} className="flex items-baseline gap-1.5">
 							<span className="shrink-0">{f.label}</span>
 							<span aria-hidden className="min-w-3 flex-1 -translate-y-[0.28em] border-b border-dotted border-current/35" />
-							<span className="shrink-0 tabular-nums">{f.valor}</span>
+							<span className={cn("shrink-0 tabular-nums", ticket.pocosDisponibles && f.label === "Cupo" && "font-semibold text-amber-700")}>
+								{f.valor}
+							</span>
 						</li>
 					))}
 				</ul>

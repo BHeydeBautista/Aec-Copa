@@ -21,7 +21,7 @@ const formatoFechaCorta = new Intl.DateTimeFormat("es-AR", {
 	timeZone: "America/Argentina/Buenos_Aires",
 });
 
-/** Acepta "2026-11-28" o ISO completo. Las fechas sin hora se toman a mediodía AR para evitar corrimientos. */
+/** Acepta una fecha ISO o una fecha ISO completa. Las fechas sin hora se toman a mediodía AR para evitar corrimientos. */
 function aFecha(fecha: string): Date {
 	return new Date(fecha.length === 10 ? `${fecha}T12:00:00-03:00` : fecha);
 }

@@ -31,8 +31,9 @@ export interface TipoEntrada {
 	requiereAcreditacion?: boolean;
 }
 
-/** Estado público del cupo: solo si quedan lugares (la cantidad no se expone). */
+/** Estado público del cupo: nunca expone la cantidad exacta de lugares. */
 export interface EstadoCupo {
 	tipo: TipoEntradaId;
 	agotado: boolean;
+	pocosDisponibles: boolean;
 }

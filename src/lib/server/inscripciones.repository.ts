@@ -19,6 +19,7 @@ const ARCHIVO_DB = path.join(DIR_DATOS, "inscripciones.json");
 const DIR_COMPROBANTES = path.join(DIR_DATOS, "comprobantes");
 
 const CUPO_TIPO = "pileta-challenger" as const;
+const UMBRAL_POCOS_CUPOS = 10;
 
 export function generarIdInscripcion(): string {
 	const tiempo = Date.now().toString(36).slice(-4).toUpperCase();
@@ -37,8 +38,13 @@ export async function guardarInscripcion(registro: InscripcionRegistro, archivo:
 export async function obtenerCupo(): Promise<EstadoCupo> {
 	const total = obtenerTipoEntrada(CUPO_TIPO)?.cupo?.total ?? 0;
 	const ocupados = SCRIPT_URL ? await contarEnGoogle() : await contarLocal();
-	// Las cantidades quedan del lado del servidor: al sitio solo le llega si hay o no lugar.
-	return { tipo: CUPO_TIPO, agotado: total - ocupados <= 0 };
+	const disponibles = total - ocupados;
+	// La cantidad exacta queda en el servidor; al sitio solo llega una señal de disponibilidad baja.
+	return {
+		tipo: CUPO_TIPO,
+		agotado: disponibles <= 0,
+		pocosDisponibles: disponibles > 0 && disponibles <= UMBRAL_POCOS_CUPOS,
+	};
 }
 
 // ─── Google Apps Script ─────────────────────────────────────────────────────────

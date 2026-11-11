@@ -12,7 +12,7 @@ export interface ActividadCronograma {
 export interface JornadaCronograma {
 	id: string;
 	categoria: CategoriaCronograma;
-	/** Fecha ISO sin hora: "2026-11-28" */
+	/** Fecha ISO sin hora: "2026-12-05" */
 	fecha: string;
 	titulo: string;
 	lugar?: string;

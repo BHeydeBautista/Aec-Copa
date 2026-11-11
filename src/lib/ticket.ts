@@ -38,6 +38,7 @@ export interface Ticket {
 	/** Texto del sello (ej: "Ahorrás $5.000"); null = sin sello. */
 	sello: string | null;
 	destacado: boolean;
+	pocosDisponibles: boolean;
 }
 
 /**
@@ -63,7 +64,7 @@ export function armarTicket(
 	if (tipo.cupo) {
 		filas.push({
 			label: "Cupo",
-			valor: cupoPropio?.agotado ? "Completo" : "Disponible",
+			valor: cupoPropio?.agotado ? "Completo" : cupoPropio?.pocosDisponibles ? "Quedan pocos" : "Disponible",
 		});
 	}
 	if (tipo.requiereAcreditacion) filas.push({ label: "Acredita", valor: "N° socio" });
@@ -78,5 +79,6 @@ export function armarTicket(
 		total,
 		sello: descuento > 0 ? `Ahorrás ${formatear(descuento)}` : cupoPropio?.agotado ? "Cupo completo" : null,
 		destacado: Boolean(tipo.destacado || tipo.requiereAcreditacion),
+		pocosDisponibles: Boolean(cupoPropio?.pocosDisponibles && !cupoPropio.agotado),
 	};
 }

@@ -1,6 +1,5 @@
 import Hero from "@/components/hero/hero";
 import Cronograma from "@/components/sections/cronograma/cronograma";
-import CtaInscripcion from "@/components/sections/cta/cta-inscripcion";
 import Faq from "@/components/sections/faq/faq";
 import LogosStrip from "@/components/sections/logos/logos-strip";
 import Precios from "@/components/sections/precios/precios";
@@ -12,7 +11,6 @@ export default function HomePage() {
 			<LogosStrip />
 			<Cronograma />
 			<Precios />
-			<CtaInscripcion />
 			<Faq />
 		</>
 	);

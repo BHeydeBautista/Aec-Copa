@@ -1,9 +1,6 @@
 import type { Evento } from "@/types";
 
-/**
- * ⚠️ COMPLETAR: fechas, sede y contacto son valores de ejemplo.
- * Todo el sitio (hero, cuenta regresiva, cronograma, footer) lee de acá.
- */
+/** Todo el sitio (hero, cuenta regresiva, cronograma y footer) lee de acá. */
 export const evento: Evento = {
 	nombre: "Copa Challenger",
 	edicion: "2026",
@@ -16,8 +13,8 @@ export const evento: Evento = {
 		ciudad: "Paraná, Entre Ríos",
 		mapsUrl: "https://maps.google.com/?q=Atletico+Echague+Club+Parana",
 	},
-	fechaClinica: "2026-11-28T09:00:00-03:00", // TODO: confirmar
-	fechaCopa: "2026-11-29T08:30:00-03:00", // TODO: confirmar
+	fechaClinica: "2026-12-05T10:00:00-03:00",
+	fechaCopa: "2026-12-05T17:00:00-03:00",
 	contacto: {
 		email: undefined, // TODO: completar
 		whatsapp: undefined, // TODO: completar, formato 5493430000000
