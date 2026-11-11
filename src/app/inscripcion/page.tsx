@@ -7,7 +7,7 @@ import { formatearFechaLarga } from "@/lib/format";
 
 export const metadata: Metadata = {
 	title: "Inscripción",
-	description: "Elegí tu entrada para la Clínica Meolans, pagá y subí el comprobante.",
+	description: "Elegí tu entrada para la Clínica Meolans, pagá y enviá el comprobante para revisión.",
 };
 
 export default function InscripcionPage() {
@@ -23,7 +23,7 @@ export default function InscripcionPage() {
 					<p className="text-xs font-semibold tracking-[0.2em] text-brand uppercase">Atlético Echagüe Club · Natación Máster</p>
 					<h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-balance sm:text-5xl">Inscripción a la clínica</h1>
 					<p className="mx-auto mt-4 max-w-xl text-base leading-7 text-muted-foreground">
-						Completá tus datos, elegí tu entrada y adjuntá el comprobante para reservar tu lugar.
+						Completá tus datos y adjuntá el comprobante. La inscripción se confirma cuando la organización aprueba el pago.
 					</p>
 					<div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-y border-border/80 py-3 text-sm text-muted-foreground">
 						<span>{formatearFechaLarga(evento.fechaClinica)}</span>

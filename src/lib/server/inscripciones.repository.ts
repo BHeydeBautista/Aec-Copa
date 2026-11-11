@@ -2,7 +2,7 @@ import { randomInt } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { obtenerTipoEntrada } from "@/data/entradas";
-import type { EstadoCupo, InscripcionRegistro } from "@/types";
+import type { EntradaVerificada, EstadoCupo, InscripcionRegistro } from "@/types";
 
 /**
  * Persistencia de inscripciones.
@@ -28,12 +28,34 @@ export function generarIdInscripcion(): string {
 	return `AEC-${tiempo}${azar}`;
 }
 
-export async function guardarInscripcion(registro: InscripcionRegistro, archivo: File, tokenEmail: string): Promise<void> {
+export async function guardarInscripcion(
+	registro: InscripcionRegistro,
+	archivo: File,
+	tokenEmail: string,
+	urlSitio: string,
+): Promise<void> {
 	if (SCRIPT_URL) {
-		await guardarEnGoogle(registro, archivo, tokenEmail);
+		await guardarEnGoogle(registro, archivo, tokenEmail, urlSitio);
 		return;
 	}
 	await guardarLocal(registro, archivo);
+}
+
+export async function obtenerEntradaVerificada(id: string, token: string): Promise<EntradaVerificada | undefined> {
+	if (!SCRIPT_URL) throw new Error("Falta configurar Google Apps Script.");
+
+	const url = new URL(SCRIPT_URL);
+	url.searchParams.set("action", "ticket");
+	url.searchParams.set("id", id);
+	url.searchParams.set("token", token);
+	url.searchParams.set("secret", SCRIPT_SECRET);
+
+	const response = await fetch(url, { cache: "no-store" });
+	const data = (await response.json().catch(() => null)) as
+		| { ok?: boolean; ticket?: EntradaVerificada }
+		| null;
+	if (!response.ok || !data) throw new Error(`Apps Script respondió ${response.status}`);
+	return data.ok ? data.ticket : undefined;
 }
 
 export async function gestionarVerificacionEmail(
@@ -75,7 +97,7 @@ export async function obtenerCupo(): Promise<EstadoCupo> {
 
 // ─── Google Apps Script ─────────────────────────────────────────────────────────
 
-async function guardarEnGoogle(registro: InscripcionRegistro, archivo: File, tokenEmail: string) {
+async function guardarEnGoogle(registro: InscripcionRegistro, archivo: File, tokenEmail: string, urlSitio: string) {
 	const base64 = Buffer.from(await archivo.arrayBuffer()).toString("base64");
 	const res = await fetch(SCRIPT_URL!, {
 		method: "POST",
@@ -85,6 +107,7 @@ async function guardarEnGoogle(registro: InscripcionRegistro, archivo: File, tok
 			secret: SCRIPT_SECRET,
 			registro,
 			emailVerificationToken: tokenEmail,
+			urlSitio,
 			archivo: { nombre: archivo.name, tipo: archivo.type, base64 },
 		}),
 		cache: "no-store",
@@ -128,5 +151,7 @@ async function guardarLocal(registro: InscripcionRegistro, archivo: File) {
 
 async function contarLocal(): Promise<number> {
 	const registros = await leerLocal();
-	return registros.filter((r) => r.tipoEntrada === CUPO_TIPO && r.estado !== "rechazado").length;
+	return registros
+		.filter((registro) => registro.tipoEntrada === CUPO_TIPO && registro.estado === "aprobado")
+		.reduce((cantidad, registro) => cantidad + registro.cantidad, 0);
 }

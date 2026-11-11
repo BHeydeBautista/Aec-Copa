@@ -29,14 +29,14 @@ export function InscripcionExito({ resultado, onNueva }: InscripcionExitoProps) 
 			>
 				<CircleCheck className="size-10" />
 			</motion.span>
-			<h2 className="mt-6 font-display text-3xl font-bold">¡Inscripción enviada!</h2>
+			<h2 className="mt-6 font-display text-3xl font-bold">Comprobante recibido</h2>
 			<p className="mt-3 text-muted-foreground">
-				Recibimos tus datos y el comprobante por {formatearPrecio(resultado.total)}. La organización va a revisar el pago y confirmar tu lugar.
+				Recibimos tus datos y el comprobante por {formatearPrecio(resultado.total)}. La inscripción queda pendiente hasta que la organización confirme el pago.
 			</p>
 			<div className="mt-6 w-full text-left">
-				<CopyField label="Código de inscripción" valor={resultado.id} destacado />
+				<CopyField label="Código de seguimiento" valor={resultado.id} destacado />
 			</div>
-			<p className="mt-3 text-xs text-muted-foreground">Guardalo: te lo pueden pedir en la acreditación.</p>
+			<p className="mt-3 text-xs text-muted-foreground">Guardalo para cualquier consulta. La entrada con QR te llegará por email cuando se apruebe el pago.</p>
 			<div className="mt-8 flex w-full flex-col gap-3 sm:flex-row">
 				<Button variant="outline" className="flex-1" onClick={onNueva}>
 					Inscribir a otra persona

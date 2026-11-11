@@ -16,6 +16,7 @@ src/
 ├─ app/                      # Solo páginas y rutas: llaman a componentes
 │  ├─ page.tsx               # Home: hero, logos, cronograma, precios, CTA, FAQ
 │  ├─ inscripcion/page.tsx   # Formulario (?tipo=pileta-challenger preselecciona)
+│  ├─ entrada/page.tsx       # Entrada digital con QR verificado en vivo
 │  └─ api/
 │     ├─ inscripcion/route.ts  # POST multipart: valida, recalcula precio y guarda
 │     ├─ verificacion-email/route.ts # Verificación de email antes de registrar
@@ -42,6 +43,7 @@ src/
 | Alias / CBU / titular (y link de Mercado Pago, opcional) | `src/data/pago.ts` |
 | Precio de Pileta Challenger después del cupo de 60 | `src/data/entradas.ts` → `precioSobreCupo` |
 | Backend de guardado (Google Sheet + Drive) | `docs/google-apps-script.gs` + variables de `.env.example` |
+| URL pública que se incluye en el ticket digital | `NEXT_PUBLIC_SITE_URL` |
 
 ## Hero: vuelo de dron (video con IA + scroll)
 
@@ -95,8 +97,13 @@ Se pausa cuando el hero sale de pantalla y respeta `prefers-reduced-motion`.
 - **Producción**: Vercel no permite escribir archivos → configurar Google Apps Script (instrucciones en
   `docs/google-apps-script.gs`). Cada inscripción queda como fila en una Google Sheet y el comprobante en Drive.
   El Apps Script envía un código de seis dígitos con GmailApp; se verifica antes de habilitar el envío y el token
-  se valida nuevamente al guardar. El precio se recalcula siempre en el servidor y el cupo se cuenta excluyendo
-  los `rechazado`.
+  se valida nuevamente al guardar. El precio se recalcula siempre en el servidor y el cupo promocional cuenta solo las inscripciones `aprobado`.
+- Para confirmar pagos, revisá el comprobante desde el enlace de Drive en la Sheet y usá
+  el menú **AEC Inscripciones → Aprobar pago y enviar entrada**. Solo entonces se toma el
+  cupo promocional y se manda por email el ticket con QR verificable. Si el email falla,
+  usá **Reenviar entrada**. Las filas pendientes no retienen cupo; las rechazadas tampoco.
+- Configurá `NEXT_PUBLIC_SITE_URL` con el dominio público en Vercel para que los enlaces
+  del ticket y del QR apunten al sitio correcto.
 - No se usa Google Forms: el formulario propio admite el comprobante y valida el acceso a la bandeja de email
   en el mismo flujo. Esta validación no acredita la identidad legal de la persona.
 

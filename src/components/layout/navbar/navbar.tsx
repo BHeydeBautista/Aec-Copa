@@ -82,7 +82,7 @@ export default function Navbar() {
 				</ul>
 
 				<div className="flex items-center gap-2">
-					<Link href="/inscripcion" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>
+					<Link href="/#precios" className={cn(buttonVariants({ size: "sm" }), "hidden sm:inline-flex")}>
 						Inscribirme
 					</Link>
 					<button
@@ -122,7 +122,7 @@ export default function Navbar() {
 							))}
 						</ul>
 						<Link
-							href="/inscripcion"
+							href="/#precios"
 							onClick={() => setAbierto(false)}
 							className={cn(buttonVariants({ size: "lg" }), "mt-2 w-full")}
 						>

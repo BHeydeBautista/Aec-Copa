@@ -29,7 +29,7 @@ export const preguntasFrecuentes: PreguntaFrecuente[] = [
 		id: "confirmacion",
 		pregunta: "¿Cuándo queda confirmada mi inscripción?",
 		respuesta:
-			"Cuando la organización revisa el comprobante. Vas a recibir el código de inscripción al enviar el formulario; guardalo para la acreditación.",
+			"El comprobante no reserva un cupo. La inscripción queda confirmada cuando la organización verifica el pago en la hoja de inscripciones; en ese momento te llega por email la entrada con QR.",
 	},
 	{
 		id: "cupo",

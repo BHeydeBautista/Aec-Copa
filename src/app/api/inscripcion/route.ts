@@ -79,7 +79,12 @@ export async function POST(request: Request) {
 			estado: "pendiente",
 		};
 
-		await guardarInscripcion(registro, datos.comprobante, emailVerificationToken);
+		const origenSitio = process.env.NEXT_PUBLIC_SITE_URL || request.headers.get("origin") || new URL(request.url).origin;
+		const urlSitio = new URL(origenSitio);
+		if (urlSitio.protocol !== "https:" && urlSitio.hostname !== "localhost" && urlSitio.hostname !== "127.0.0.1") {
+			throw new Error("La URL del sitio debe usar HTTPS.");
+		}
+		await guardarInscripcion(registro, datos.comprobante, emailVerificationToken, urlSitio.origin);
 		return responder({ ok: true, id, total: registro.total }, 201);
 	} catch (error) {
 		console.error("[inscripcion] Error al guardar", error);
