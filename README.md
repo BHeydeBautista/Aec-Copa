@@ -41,7 +41,7 @@ src/
 | Fechas de la clínica y la copa, sede, contacto | `src/data/evento.ts` |
 | Horarios y pruebas | `src/data/cronograma.ts` |
 | Alias / CBU / titular (y link de Mercado Pago, opcional) | `src/data/pago.ts` |
-| Límite de cupos promocionales | `src/data/entradas.ts` → `cupo.total` |
+| Límite compartido de Pileta General y Pileta Challenger | `src/data/entradas.ts` → `CUPO_PILETA_TOTAL` |
 | Backend de guardado (Google Sheet + Drive) | `docs/google-apps-script.gs` + variables de `.env.example` |
 | URL pública que se incluye en el ticket digital | `NEXT_PUBLIC_SITE_URL` |
 
@@ -97,13 +97,15 @@ Se pausa cuando el hero sale de pantalla y respeta `prefers-reduced-motion`.
 - **Producción**: Vercel no permite escribir archivos → configurar Google Apps Script (instrucciones en
   `docs/google-apps-script.gs`). Cada inscripción queda como fila en una Google Sheet y el comprobante en Drive.
   El Apps Script envía un código de seis dígitos con GmailApp; se verifica antes de habilitar el envío y el token
-  se valida nuevamente al guardar. El precio se recalcula siempre en el servidor y el cupo promocional cuenta las inscripciones `pendiente` y `aprobado`.
+  se valida nuevamente al guardar. El precio se recalcula siempre en el servidor y el cupo compartido de Pileta General
+  y Pileta Challenger cuenta las inscripciones `pendiente` y `aprobado` (máximo 40); Tribuna no cuenta.
 - Para confirmar pagos, revisá el comprobante desde el enlace de Drive en la Sheet y usá
   el menú **AEC Inscripciones → Aprobar pago y enviar entrada**. La inscripción pendiente ya
   reserva su lugar; al aprobarla, ese lugar queda confirmado y se manda por email el ticket
   con QR verificable. Si el email falla, usá **Reenviar entrada**. Las filas rechazadas liberan
-  el cupo. Después de actualizar `docs/google-apps-script.gs`, publicá una nueva versión de la
-  implementación web para que el bloqueo simultáneo y el conteo de pendientes entren en vigor.
+  el cupo. Al llegar a 40, se cierran ambas entradas de pileta y se informa que los cupos están
+  cerrados por el momento. Después de actualizar `docs/google-apps-script.gs`, publicá una nueva
+  versión de la implementación web para que el bloqueo simultáneo y el conteo compartido entren en vigor.
 - Configurá `NEXT_PUBLIC_SITE_URL` con el dominio público en Vercel para que los enlaces
   del ticket y del QR apunten al sitio correcto.
 - No se usa Google Forms: el formulario propio admite el comprobante y valida el acceso a la bandeja de email

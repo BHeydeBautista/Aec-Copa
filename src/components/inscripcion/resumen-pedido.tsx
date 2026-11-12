@@ -33,7 +33,7 @@ export function ResumenPedido({ ctrl }: { ctrl: InscripcionFormController }) {
 				</>
 			) : cupoAgotado ? (
 				<p className="mt-4 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-					Se agotó el cupo de la entrada que habías elegido. Elegí otra para continuar.
+					Los cupos de pileta están cerrados por el momento. Elegí una entrada de tribuna para continuar.
 				</p>
 			) : (
 				<p className="mt-4 text-sm text-muted-foreground">Elegí una entrada para ver el total.</p>

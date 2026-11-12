@@ -1,5 +1,7 @@
 import type { TipoEntrada, TipoEntradaId } from "@/types";
 
+export const CUPO_PILETA_TOTAL = 40;
+
 export const tiposEntrada: TipoEntrada[] = [
 	{
 		id: "pileta-general",
@@ -8,6 +10,7 @@ export const tiposEntrada: TipoEntrada[] = [
 		descripcion: "Participación en la clínica dentro del agua.",
 		precio: 20000,
 		beneficios: ["Clínica completa en pileta", "Corrección técnica", "Acceso a tribuna"],
+		cupo: { total: CUPO_PILETA_TOTAL },
 		maxCantidad: 1,
 	},
 	{
@@ -21,8 +24,8 @@ export const tiposEntrada: TipoEntrada[] = [
 		destacado: true,
 		beneficios: ["Clínica completa en pileta", "Precio preferencial", "Acceso a tribuna"],
 		cupo: {
-			// Los pagos pendientes y aprobados reservan lugar; los rechazados lo liberan.
-			total: 40,
+			// Comparte el límite con Pileta General.
+			total: CUPO_PILETA_TOTAL,
 		},
 		maxCantidad: 1,
 	},

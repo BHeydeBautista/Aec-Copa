@@ -100,6 +100,12 @@ export default function Precios() {
 					))}
 				</div>
 
+				{impreso === "pileta" && cupo?.agotado && (
+					<p className="mx-auto mt-8 max-w-2xl rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-center text-sm font-medium text-destructive" role="status">
+						Los cupos de pileta están cerrados por el momento.
+					</p>
+				)}
+
 				<p className="sr-only" aria-live="polite">
 					{tickets.map((t) => `${t.tipo.nombre} ${formatearPrecio(t.total)}`).join(", ")}
 				</p>

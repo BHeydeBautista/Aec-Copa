@@ -18,6 +18,11 @@ export function PasoEntrada({ ctrl }: { ctrl: InscripcionFormController }) {
 		<div className="flex flex-col gap-6">
 			<fieldset>
 				<legend className="mb-3 text-sm font-medium">Tipo de entrada</legend>
+				{cupo?.agotado && (
+					<p className="mb-3 rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive" role="status">
+						Los cupos de pileta están cerrados por el momento. Podés elegir una entrada de tribuna.
+					</p>
+				)}
 				<div className="grid gap-3 sm:grid-cols-2" role="radiogroup">
 					{tiposEntrada.map((t) => {
 						const precio = calcularPrecioUnitario(t);
@@ -48,14 +53,18 @@ export function PasoEntrada({ ctrl }: { ctrl: InscripcionFormController }) {
 								<span className="font-semibold">{t.nombre}</span>
 								{t.observacion && <span className="text-xs leading-5 text-amber-200">{t.observacion}</span>}
 								<span className="font-display text-xl font-bold tabular-nums">{formatearPrecio(precio)}</span>
-								{t.cupo && cupo?.tipo === t.id && (
+								{t.cupo && cupo?.tipo === t.zona && (
 									<span
 										className={cn(
 											"text-xs",
 											cerrada ? "font-semibold text-destructive" : cupo.pocosDisponibles ? "font-medium text-amber-300" : "text-muted-foreground",
 										)}
 									>
-										{cerrada ? "Cupo agotado" : cupo.pocosDisponibles ? "Se están por acabar los cupos" : "Cupos disponibles"}
+										{cerrada
+											? "Cupos cerrados por el momento"
+											: cupo.pocosDisponibles
+												? "Se están por acabar los cupos de pileta"
+												: "Cupos disponibles"}
 									</span>
 								)}
 							</label>

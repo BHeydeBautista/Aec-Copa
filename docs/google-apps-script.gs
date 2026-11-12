@@ -18,9 +18,9 @@
  *     Después, recargá la Sheet para que aparezca el menú "AEC Inscripciones".
  *
  * La organización revisa el comprobante en Drive y usa el menú "AEC Inscripciones"
- * de la Sheet para aprobar/rechazar. Los pagos pendientes y aprobados reservan cupo
- * promocional; al rechazar un pendiente, se libera. La aprobación envía por email la entrada
- * con QR verificable. No cambies "estado"
+ * de la Sheet para aprobar/rechazar. Pileta General y Pileta Challenger comparten un máximo
+ * de 40 lugares: los pagos pendientes y aprobados reservan lugar; al rechazar un pendiente, se libera.
+ * La aprobación envía por email la entrada con QR verificable. No cambies "estado"
  * manualmente: usá el menú para que el email y el token del QR queden sincronizados.
  * El código de email vence en 10 minutos, permite 5 intentos y limita los reenvíos
  * a uno por minuto y limita el formulario a 80 envíos diarios. El token verificado
@@ -31,8 +31,8 @@ const CARPETA_ID = "1hXd64YHZQtN9erK1Xsj9aR3ZztobBgU0";
 const SECRET = "PEGAR_CLAVE_SECRETA";
 const HOJA = "Inscripciones";
 const MAX_CODIGOS_DIARIOS = 80;
-const TIPO_CUPO_PROMOCIONAL = "pileta-challenger";
-const CUPO_PROMOCIONAL = 40;
+const TIPOS_CUPO_PILETA = ["pileta-general", "pileta-challenger"];
+const CUPO_PILETA_TOTAL = 40;
 const PRECIO_PROMOCIONAL = 15000;
 const PRECIO_GENERAL = 20000;
 
@@ -132,11 +132,20 @@ function valorFila_(contexto, columna) {
   return indice === undefined ? "" : contexto.valores[indice];
 }
 
-function contarCuposPromocionalesAprobados_(hoja, indices) {
+function esTipoCupoPileta_(tipo) {
+  return TIPOS_CUPO_PILETA.indexOf(tipo) !== -1;
+}
+
+function contarCuposPiletaReservados_(hoja, indices, filaExcluir) {
   if (hoja.getLastRow() < 2) return 0;
   const filas = hoja.getRange(2, 1, hoja.getLastRow() - 1, hoja.getLastColumn()).getValues();
-  return filas.reduce(function (total, fila) {
-    if (fila[indices.estado] !== "aprobado" || fila[indices.tipoEntrada] !== TIPO_CUPO_PROMOCIONAL) return total;
+  return filas.reduce(function (total, fila, indice) {
+    const filaHoja = indice + 2;
+    if (
+      filaHoja === filaExcluir ||
+      !esTipoCupoPileta_(fila[indices.tipoEntrada]) ||
+      (fila[indices.estado] !== "aprobado" && fila[indices.estado] !== "pendiente")
+    ) return total;
     return total + Math.max(1, Number(fila[indices.cantidad]) || 1);
   }, 0);
 }
@@ -193,14 +202,16 @@ function aprobarPagoSeleccionado() {
     const tipo = String(valorFila_(contexto, "tipoEntrada"));
     const cantidad = Math.max(1, Number(valorFila_(contexto, "cantidad")) || 1);
     const precioActual = Number(valorFila_(contexto, "precioUnitario")) || 0;
-    if (tipo === TIPO_CUPO_PROMOCIONAL) {
-      const cuposAprobados = contarCuposPromocionalesAprobados_(contexto.hoja, contexto.indices);
-      if (cuposAprobados + cantidad > CUPO_PROMOCIONAL) {
+    if (esTipoCupoPileta_(tipo)) {
+      const reservados = contarCuposPiletaReservados_(contexto.hoja, contexto.indices, contexto.fila);
+      if (reservados + cantidad > CUPO_PILETA_TOTAL) {
         throw new Error(
-          "El cupo de Pileta Challenger (" + CUPO_PROMOCIONAL + " aprobados) ya está completo: no se puede aprobar esta inscripción. " +
-            "Coordiná con la persona el cambio a Pileta General o la devolución, y rechazá esta fila.",
+          "El cupo compartido de pileta (" + CUPO_PILETA_TOTAL + " lugares) ya está completo: no se puede aprobar esta inscripción. " +
+            "Coordiná con la persona y rechazá esta fila si corresponde.",
         );
       }
+    }
+    if (tipo === "pileta-challenger") {
       if (precioActual < PRECIO_PROMOCIONAL) {
         throw new Error("El precio registrado es menor al de Pileta Challenger. Revisalo antes de aprobar.");
       }
@@ -257,7 +268,7 @@ function rechazarInscripcionSeleccionada() {
     }
     contexto.hoja.getRange(contexto.fila, contexto.indices.estado + 1).setValue("rechazado");
     titulo = "Inscripción rechazada";
-    mensaje = "No ocupa cupo promocional.";
+    mensaje = "No ocupa cupo de pileta.";
   } catch (error) {
     mensaje = error instanceof Error ? error.message : String(error);
   } finally {
@@ -290,7 +301,7 @@ function doPost(e) {
         return json_({ ok: false, error: "El email no está verificado o venció la verificación. Verificalo nuevamente." });
       }
 
-      if (r.tipoEntrada === TIPO_CUPO_PROMOCIONAL) {
+      if (esTipoCupoPileta_(r.tipoEntrada)) {
         const hojaCupo = obtenerHoja_();
         const datosCupo = hojaCupo.getDataRange().getValues();
         const cabCupo = datosCupo.shift();
@@ -298,10 +309,10 @@ function doPost(e) {
         const iE = cabCupo.indexOf("estado");
         const iC = cabCupo.indexOf("cantidad");
         const reservados = datosCupo.reduce(function (total, fila) {
-          if (fila[iT] !== TIPO_CUPO_PROMOCIONAL || (fila[iE] !== "aprobado" && fila[iE] !== "pendiente")) return total;
+          if (!esTipoCupoPileta_(fila[iT]) || (fila[iE] !== "aprobado" && fila[iE] !== "pendiente")) return total;
           return total + Math.max(1, Number(fila[iC]) || 1);
         }, 0);
-        if (reservados + Math.max(1, Number(r.cantidad) || 1) > CUPO_PROMOCIONAL) {
+        if (reservados + Math.max(1, Number(r.cantidad) || 1) > CUPO_PILETA_TOTAL) {
           return json_({ ok: false, error: "CUPO_COMPLETO" });
         }
       }
@@ -466,14 +477,14 @@ function doGet(e) {
     const iEstado = cab.indexOf("estado");
     const iCantidad = cab.indexOf("cantidad");
     const ocupados = datos.reduce(function (total, fila) {
-      if (fila[iTipo] !== p.tipo || fila[iEstado] !== "aprobado") return total;
+      if (!esTipoCupoPileta_(fila[iTipo]) || fila[iEstado] !== "aprobado") return total;
       return total + Math.max(1, Number(iCantidad >= 0 ? fila[iCantidad] : 1) || 1);
     }, 0);
     const pendientes = datos.reduce(function (total, fila) {
-      if (fila[iTipo] !== p.tipo || fila[iEstado] !== "pendiente") return total;
+      if (!esTipoCupoPileta_(fila[iTipo]) || fila[iEstado] !== "pendiente") return total;
       return total + Math.max(1, Number(iCantidad >= 0 ? fila[iCantidad] : 1) || 1);
     }, 0);
-    return json_({ ocupados: ocupados, pendientes: pendientes });
+    return json_({ tipo: "pileta", ocupados: ocupados, pendientes: pendientes });
   }
 
   if (p.action === "ticket") return obtenerEntrada_(p);

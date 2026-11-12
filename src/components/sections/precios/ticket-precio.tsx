@@ -201,7 +201,7 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 
 				{ticket.agotado ? (
 					<p className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-md border border-dashed border-current/40 text-xs font-semibold tracking-[0.16em] uppercase">
-						Cupo agotado
+						Cupos cerrados por el momento
 					</p>
 				) : (
 				<Link
@@ -230,7 +230,7 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 				{ticket.agotado && (
 					<div aria-hidden className="pointer-events-none absolute inset-0 grid place-items-center">
 						<span className="-rotate-[18deg] border-4 border-[#cf3a44] px-4 py-1 font-marcador text-5xl font-extrabold tracking-[0.12em] text-[#cf3a44] uppercase opacity-80">
-							Agotado
+							Cerrado
 						</span>
 					</div>
 				)}

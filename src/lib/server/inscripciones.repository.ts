@@ -1,7 +1,7 @@
 import { randomInt } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { obtenerTipoEntrada } from "@/data/entradas";
+import { CUPO_PILETA_TOTAL } from "@/data/entradas";
 import type { EntradaVerificada, EstadoCupo, InscripcionRegistro } from "@/types";
 
 /**
@@ -19,7 +19,8 @@ const DIR_DATOS = path.join(process.cwd(), ".data");
 const ARCHIVO_DB = path.join(DIR_DATOS, "inscripciones.json");
 const DIR_COMPROBANTES = path.join(DIR_DATOS, "comprobantes");
 
-const CUPO_TIPO = "pileta-challenger" as const;
+const TIPOS_CUPO_PILETA = ["pileta-general", "pileta-challenger"] as const;
+const CUPO_TIPO = "pileta" as const;
 const UMBRAL_POCOS_CUPOS = 10;
 
 export function generarIdInscripcion(): string {
@@ -84,12 +85,11 @@ export async function gestionarVerificacionEmail(
 }
 
 export async function obtenerCupo(): Promise<EstadoCupo> {
-	const total = obtenerTipoEntrada(CUPO_TIPO)?.cupo?.total ?? 0;
 	// Los pagos pendientes reservan lugar igual que los aprobados; al rechazar un pendiente, se libera.
-	// Solo en desarrollo: CUPO_SIMULAR_APROBADOS=55 permite ver los estados "últimos lugares" y "agotado".
+	// Solo en desarrollo: CUPO_SIMULAR_APROBADOS permite probar estados de disponibilidad.
 	const simulados = process.env.NODE_ENV !== "production" ? process.env.CUPO_SIMULAR_APROBADOS : undefined;
 	const ocupados = simulados ? Number(simulados) : SCRIPT_URL ? await contarEnGoogle() : await contarLocal();
-	const disponibles = total - ocupados;
+	const disponibles = CUPO_PILETA_TOTAL - ocupados;
 	// La cantidad exacta queda en el servidor; al sitio solo llega una señal de disponibilidad baja.
 	return {
 		tipo: CUPO_TIPO,
@@ -128,10 +128,11 @@ async function contarEnGoogle(): Promise<number> {
 	url.searchParams.set("secret", SCRIPT_SECRET);
 	const res = await fetch(url, { cache: "no-store" });
 	if (!res.ok) throw new Error(`Apps Script respondió ${res.status} al consultar el cupo.`);
-	const data = (await res.json()) as { ocupados?: unknown; pendientes?: unknown; error?: string };
+	const data = (await res.json()) as { tipo?: unknown; ocupados?: unknown; pendientes?: unknown; error?: string };
 	const aprobados = data.ocupados;
 	const pendientes = data.pendientes;
 	if (
+		data.tipo !== CUPO_TIPO ||
 		typeof aprobados !== "number" ||
 		typeof pendientes !== "number" ||
 		!Number.isFinite(aprobados) ||
@@ -166,8 +167,7 @@ async function guardarLocal(registro: InscripcionRegistro, archivo: File) {
 	await anterior;
 	try {
 		const registros = await leerLocal();
-		const total = obtenerTipoEntrada(CUPO_TIPO)?.cupo?.total ?? 0;
-		if (registro.tipoEntrada === CUPO_TIPO && contarReservasLocales(registros) + registro.cantidad > total) {
+		if (esTipoCupoPileta(registro.tipoEntrada) && contarReservasLocales(registros) + registro.cantidad > CUPO_PILETA_TOTAL) {
 			throw new Error("CUPO_COMPLETO");
 		}
 
@@ -192,7 +192,11 @@ function contarReservasLocales(registros: InscripcionRegistro[]): number {
 	return registros
 		.filter(
 			(registro) =>
-				registro.tipoEntrada === CUPO_TIPO && (registro.estado === "pendiente" || registro.estado === "aprobado"),
+				esTipoCupoPileta(registro.tipoEntrada) && (registro.estado === "pendiente" || registro.estado === "aprobado"),
 		)
 		.reduce((cantidad, registro) => cantidad + Math.max(1, Number(registro.cantidad) || 1), 0);
+}
+
+function esTipoCupoPileta(tipo: InscripcionRegistro["tipoEntrada"]): boolean {
+	return TIPOS_CUPO_PILETA.some((tipoCupo) => tipoCupo === tipo);
 }

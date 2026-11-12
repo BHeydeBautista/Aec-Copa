@@ -51,10 +51,14 @@ export async function POST(request: Request) {
 
 	try {
 		// El precio se recalcula en el servidor: nunca se confía en el total del cliente.
-		const cupo = tipo.cupo ? await obtenerCupo() : null;
+		const cupo = tipo.zona === "pileta" ? await obtenerCupo() : null;
 		if (entradaCerrada(tipo, cupo)) {
 			return responder(
-				{ ok: false, error: `Se agotó el cupo de ${tipo.nombre}. Elegí otra entrada.`, campos: { tipoEntrada: "Cupo agotado" } },
+				{
+					ok: false,
+					error: "Los cupos de pileta están cerrados por el momento. Elegí una entrada de tribuna.",
+					campos: { tipoEntrada: "Cupos cerrados por el momento" },
+				},
 				409,
 			);
 		}
@@ -95,7 +99,11 @@ export async function POST(request: Request) {
 	} catch (error) {
 		if (error instanceof Error && error.message === "CUPO_COMPLETO") {
 			return responder(
-				{ ok: false, error: `Se completó el cupo de ${tipo.nombre}. Elegí otra entrada.`, campos: { tipoEntrada: "Cupo agotado" } },
+				{
+					ok: false,
+					error: "Los cupos de pileta están cerrados por el momento. Elegí una entrada de tribuna.",
+					campos: { tipoEntrada: "Cupos cerrados por el momento" },
+				},
 				409,
 			);
 		}

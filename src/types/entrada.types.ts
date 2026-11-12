@@ -10,7 +10,7 @@ export type TipoEntradaId = (typeof TIPOS_ENTRADA_IDS)[number];
 export type ZonaEntrada = "pileta" | "tribuna";
 
 export interface CupoEntrada {
-	/** Máximo de inscripciones pendientes o aprobadas. Al alcanzarlo, la entrada deja de venderse. */
+	/** Límite compartido de la zona pileta, contando inscripciones pendientes y aprobadas. */
 	total: number;
 }
 
@@ -33,7 +33,7 @@ export interface TipoEntrada {
 
 /** Estado público del cupo: nunca expone la cantidad exacta de lugares. */
 export interface EstadoCupo {
-	tipo: TipoEntradaId;
+	tipo: ZonaEntrada;
 	agotado: boolean;
 	pocosDisponibles: boolean;
 }

@@ -53,7 +53,7 @@ export function armarTicket(
 	cupo: EstadoCupo | null,
 	formatear: (n: number) => string,
 ): Ticket {
-	const cupoPropio = tipo.cupo && cupo?.tipo === tipo.id ? cupo : null;
+	const cupoPropio = tipo.cupo && cupo?.tipo === tipo.zona ? cupo : null;
 	const total = calcularPrecioUnitario(tipo);
 	const agotado = Boolean(cupoPropio?.agotado);
 	const subtotal = Math.max(general.precio, total);
@@ -67,7 +67,11 @@ export function armarTicket(
 	if (tipo.cupo) {
 		filas.push({
 			label: "Cupo",
-			valor: agotado ? "Agotado" : cupoPropio?.pocosDisponibles ? "Últimos lugares" : "Disponible",
+			valor: agotado
+				? "Cerrado por el momento"
+				: cupoPropio?.pocosDisponibles
+					? "Últimos lugares"
+					: "Disponible",
 		});
 	}
 	if (tipo.requiereAcreditacion) filas.push({ label: "Acredita", valor: "N° socio" });
