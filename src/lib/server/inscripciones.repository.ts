@@ -85,7 +85,10 @@ export async function gestionarVerificacionEmail(
 
 export async function obtenerCupo(): Promise<EstadoCupo> {
 	const total = obtenerTipoEntrada(CUPO_TIPO)?.cupo?.total ?? 0;
-	const ocupados = SCRIPT_URL ? await contarEnGoogle() : await contarLocal();
+	// Los pagos pendientes reservan lugar igual que los aprobados; al rechazar un pendiente, se libera.
+	// Solo en desarrollo: CUPO_SIMULAR_APROBADOS=55 permite ver los estados "últimos lugares" y "agotado".
+	const simulados = process.env.NODE_ENV !== "production" ? process.env.CUPO_SIMULAR_APROBADOS : undefined;
+	const ocupados = simulados ? Number(simulados) : SCRIPT_URL ? await contarEnGoogle() : await contarLocal();
 	const disponibles = total - ocupados;
 	// La cantidad exacta queda en el servidor; al sitio solo llega una señal de disponibilidad baja.
 	return {
@@ -124,34 +127,72 @@ async function contarEnGoogle(): Promise<number> {
 	url.searchParams.set("tipo", CUPO_TIPO);
 	url.searchParams.set("secret", SCRIPT_SECRET);
 	const res = await fetch(url, { cache: "no-store" });
-	const data = (await res.json()) as { ocupados?: number };
-	return Number(data.ocupados ?? 0);
+	if (!res.ok) throw new Error(`Apps Script respondió ${res.status} al consultar el cupo.`);
+	const data = (await res.json()) as { ocupados?: unknown; pendientes?: unknown; error?: string };
+	const aprobados = data.ocupados;
+	const pendientes = data.pendientes;
+	if (
+		typeof aprobados !== "number" ||
+		typeof pendientes !== "number" ||
+		!Number.isFinite(aprobados) ||
+		!Number.isFinite(pendientes) ||
+		aprobados < 0 ||
+		pendientes < 0
+	) {
+		throw new Error(data.error ?? "Apps Script no informa aprobados y pendientes. Actualizá su implementación.");
+	}
+	return aprobados + pendientes;
 }
 
 // ─── Local (desarrollo) ─────────────────────────────────────────────────────────
 
 async function leerLocal(): Promise<InscripcionRegistro[]> {
+	let contenido: string;
 	try {
-		return JSON.parse(await readFile(ARCHIVO_DB, "utf8")) as InscripcionRegistro[];
-	} catch {
-		return [];
+		contenido = await readFile(ARCHIVO_DB, "utf8");
+	} catch (error) {
+		if (error instanceof Error && "code" in error && error.code === "ENOENT") return [];
+		throw error;
 	}
+	return JSON.parse(contenido) as InscripcionRegistro[];
 }
 
 async function guardarLocal(registro: InscripcionRegistro, archivo: File) {
-	await mkdir(DIR_COMPROBANTES, { recursive: true });
-	const extension = path.extname(archivo.name) || ".bin";
-	const nombreArchivo = `${registro.id}${extension}`;
-	await writeFile(path.join(DIR_COMPROBANTES, nombreArchivo), Buffer.from(await archivo.arrayBuffer()));
+	const anterior = colaGuardadoLocal;
+	let liberar: () => void = () => {};
+	colaGuardadoLocal = new Promise<void>((resolve) => {
+		liberar = resolve;
+	});
+	await anterior;
+	try {
+		const registros = await leerLocal();
+		const total = obtenerTipoEntrada(CUPO_TIPO)?.cupo?.total ?? 0;
+		if (registro.tipoEntrada === CUPO_TIPO && contarReservasLocales(registros) + registro.cantidad > total) {
+			throw new Error("CUPO_COMPLETO");
+		}
 
-	const registros = await leerLocal();
-	registros.push({ ...registro, comprobante: { ...registro.comprobante, url: `.data/comprobantes/${nombreArchivo}` } });
-	await writeFile(ARCHIVO_DB, JSON.stringify(registros, null, 2), "utf8");
+		await mkdir(DIR_COMPROBANTES, { recursive: true });
+		const extension = path.extname(archivo.name) || ".bin";
+		const nombreArchivo = `${registro.id}${extension}`;
+		await writeFile(path.join(DIR_COMPROBANTES, nombreArchivo), Buffer.from(await archivo.arrayBuffer()));
+		registros.push({ ...registro, comprobante: { ...registro.comprobante, url: `.data/comprobantes/${nombreArchivo}` } });
+		await writeFile(ARCHIVO_DB, JSON.stringify(registros, null, 2), "utf8");
+	} finally {
+		liberar();
+	}
 }
 
 async function contarLocal(): Promise<number> {
-	const registros = await leerLocal();
+	return contarReservasLocales(await leerLocal());
+}
+
+let colaGuardadoLocal: Promise<void> = Promise.resolve();
+
+function contarReservasLocales(registros: InscripcionRegistro[]): number {
 	return registros
-		.filter((registro) => registro.tipoEntrada === CUPO_TIPO && registro.estado === "aprobado")
-		.reduce((cantidad, registro) => cantidad + registro.cantidad, 0);
+		.filter(
+			(registro) =>
+				registro.tipoEntrada === CUPO_TIPO && (registro.estado === "pendiente" || registro.estado === "aprobado"),
+		)
+		.reduce((cantidad, registro) => cantidad + Math.max(1, Number(registro.cantidad) || 1), 0);
 }

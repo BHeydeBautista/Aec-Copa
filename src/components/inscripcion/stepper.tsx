@@ -19,8 +19,13 @@ export function Stepper({ pasos, indiceActual, onIrA, deshabilitado }: StepperPr
 
 	return (
 		<nav aria-label="Pasos de la inscripción">
-			<ol className="relative grid grid-cols-4">
-				<div aria-hidden className="absolute top-[18px] right-[12.5%] left-[12.5%] h-px bg-foreground/15">
+			{/* Columnas e inicio/fin de la línea según la cantidad de pasos (antes estaba fijo en 4). */}
+			<ol className="relative grid" style={{ gridTemplateColumns: `repeat(${pasos.length}, minmax(0, 1fr))` }}>
+				<div
+					aria-hidden
+					className="absolute top-[18px] h-px bg-foreground/15"
+					style={{ left: `${50 / pasos.length}%`, right: `${50 / pasos.length}%` }}
+				>
 					<motion.div
 						className="h-full bg-brand"
 						animate={{ width: `${progreso}%` }}
@@ -48,7 +53,7 @@ export function Stepper({ pasos, indiceActual, onIrA, deshabilitado }: StepperPr
 							</span>
 							<span
 								className={cn(
-									"text-center text-xs font-medium sm:text-sm",
+									"text-center text-[10px] leading-tight font-medium sm:text-sm",
 									paso.estado === "pendiente" ? "text-muted-foreground" : "text-foreground",
 								)}
 							>

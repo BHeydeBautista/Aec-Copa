@@ -29,13 +29,13 @@ export const preguntasFrecuentes: PreguntaFrecuente[] = [
 		id: "confirmacion",
 		pregunta: "¿Cuándo queda confirmada mi inscripción?",
 		respuesta:
-			"El comprobante no reserva un cupo. La inscripción queda confirmada cuando la organización verifica el pago en la hoja de inscripciones; en ese momento te llega por email la entrada con QR.",
+			"Al enviar el comprobante tu lugar queda reservado mientras se revisa el pago. La inscripción queda confirmada cuando la organización verifica el pago en la hoja de inscripciones; en ese momento te llega por email la entrada con QR.",
 	},
 	{
 		id: "cupo",
 		pregunta: "¿Qué pasa si se completa el cupo de Pileta Challenger?",
 		respuesta:
-			"Pileta Challenger tiene cupo limitado a precio preferencial. Una vez completo, las inscripciones siguientes se cobran al precio de Pileta General.",
+			"Pileta Challenger tiene cupo limitado. Los lugares se ocupan a medida que la organización aprueba los pagos; cuando se completa, esa entrada se cierra y queda disponible Pileta General.",
 	},
 	{
 		id: "socios",

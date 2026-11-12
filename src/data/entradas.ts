@@ -21,9 +21,8 @@ export const tiposEntrada: TipoEntrada[] = [
 		destacado: true,
 		beneficios: ["Clínica completa en pileta", "Precio preferencial", "Acceso a tribuna"],
 		cupo: {
-			total: 60,
-			// ⚠️ COMPLETAR: precio una vez superado el cupo de 60. Por defecto, el de Pileta General.
-			precioSobreCupo: 20000,
+			// Los pagos pendientes y aprobados reservan lugar; los rechazados lo liberan.
+			total: 40,
 		},
 		maxCantidad: 1,
 	},

@@ -8,7 +8,7 @@ import { obtenerTipoEntrada } from "@/data/entradas";
 import { pasosFormulario } from "@/data/inscripcion";
 import { metodosHabilitados } from "@/data/pago";
 import { useCupo } from "@/hooks/use-cupo";
-import { calcularPrecioUnitario } from "@/lib/precios";
+import { calcularPrecioUnitario, entradaCerrada } from "@/lib/precios";
 import { confirmarCodigoEmail, enviarCodigoEmail, enviarInscripcion } from "@/lib/services/inscripcion.service";
 import {
 	camposPorPaso,
@@ -44,7 +44,7 @@ export function useInscripcionForm(tipoInicial?: TipoEntradaId) {
 	});
 
 	// Si llega con la entrada preelegida desde una card, arranca en "Tus datos".
-	const [indicePaso, setIndicePaso] = useState(tipoInicial ? 1 : 0);
+	const [indicePasoGuardado, setIndicePaso] = useState(tipoInicial ? 1 : 0);
 	const [resultado, setResultado] = useState<InscripcionRespuestaOk | null>(null);
 	const [codigoEmail, setCodigoEmail] = useState("");
 	const [emailDeCodigo, setEmailDeCodigo] = useState("");
@@ -57,7 +57,11 @@ export function useInscripcionForm(tipoInicial?: TipoEntradaId) {
 
 	const [tipoId, cantidadRaw] = useWatch({ control: form.control, name: ["tipoEntrada", "cantidad"] });
 	const email = useWatch({ control: form.control, name: "email" });
-	const tipo = obtenerTipoEntrada(tipoId);
+	const tipoElegido = obtenerTipoEntrada(tipoId);
+	// Si el cupo de la entrada elegida se completó, se descarta la elección y se vuelve al primer paso.
+	const cupoAgotado = Boolean(tipoElegido && entradaCerrada(tipoElegido, cupo));
+	const tipo = cupoAgotado ? undefined : tipoElegido;
+	const indicePaso = tipo ? indicePasoGuardado : 0;
 	const cantidad = Number.isFinite(cantidadRaw) && cantidadRaw > 0 ? cantidadRaw : 1;
 	const emailNormalizado = email.trim().toLowerCase();
 
@@ -66,9 +70,8 @@ export function useInscripcionForm(tipoInicial?: TipoEntradaId) {
 		if (tipo && cantidad > tipo.maxCantidad) form.setValue("cantidad", tipo.maxCantidad);
 	}, [tipo, cantidad, form]);
 
-	const precioUnitario = tipo ? calcularPrecioUnitario(tipo, cupo) : 0;
+	const precioUnitario = tipo ? calcularPrecioUnitario(tipo) : 0;
 	const total = precioUnitario * cantidad;
-	const cupoAgotado = Boolean(tipo?.cupo && cupo?.agotado);
 
 	const paso = pasosFormulario[indicePaso];
 	const esUltimoPaso = indicePaso === pasosFormulario.length - 1;

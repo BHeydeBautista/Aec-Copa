@@ -1,16 +1,15 @@
 import type { EstadoCupo, TipoEntrada } from "@/types";
 
-/**
- * Precio unitario vigente para un tipo de entrada.
- * Si el tipo tiene cupo y está agotado, se cobra `precioSobreCupo`.
- */
-export function calcularPrecioUnitario(tipo: TipoEntrada, cupo?: EstadoCupo | null): number {
-	if (tipo.cupo && cupo?.tipo === tipo.id && cupo.agotado) {
-		return tipo.cupo.precioSobreCupo;
-	}
+/** ¿Esta entrada dejó de venderse porque se completó su cupo? */
+export function entradaCerrada(tipo: TipoEntrada, cupo?: EstadoCupo | null): boolean {
+	return Boolean(tipo.cupo && cupo?.tipo === tipo.id && cupo.agotado);
+}
+
+/** Precio unitario de una entrada. (Con el cupo completo la entrada se cierra: no cambia de precio.) */
+export function calcularPrecioUnitario(tipo: TipoEntrada): number {
 	return tipo.precio;
 }
 
-export function calcularTotal(tipo: TipoEntrada, cantidad: number, cupo?: EstadoCupo | null): number {
-	return calcularPrecioUnitario(tipo, cupo) * Math.max(1, cantidad);
+export function calcularTotal(tipo: TipoEntrada, cantidad: number): number {
+	return calcularPrecioUnitario(tipo) * Math.max(1, cantidad);
 }

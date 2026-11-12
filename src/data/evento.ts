@@ -16,12 +16,12 @@ export const evento: Evento = {
 	fechaClinica: "2026-12-05T10:00:00-03:00",
 	fechaCopa: "2026-12-05T17:00:00-03:00",
 	contacto: {
-		email: undefined, // TODO: completar
-		whatsapp: undefined, // TODO: completar, formato 5493430000000
-		instagram: undefined, // TODO: completar, sin @
+		// Por pedido de la organización, el único contacto público es Instagram.
+		email: undefined,
+		whatsapp: undefined,
+		instagram: "natacionmasterechague", // sin @
 	},
 };
 
 /** Año fijo para el footer (evita `new Date()` en server components con cacheComponents). */
 export const ANIO_SITIO = 2026;
-export const VERSION_SITIO = "1.0";

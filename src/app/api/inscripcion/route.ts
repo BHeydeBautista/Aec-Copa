@@ -1,5 +1,5 @@
 import { obtenerTipoEntrada } from "@/data/entradas";
-import { calcularPrecioUnitario } from "@/lib/precios";
+import { calcularPrecioUnitario, entradaCerrada } from "@/lib/precios";
 import { generarIdInscripcion, guardarInscripcion, obtenerCupo } from "@/lib/server/inscripciones.repository";
 import { inscripcionSchema } from "@/lib/validations/inscripcion.schema";
 import type { InscripcionRegistro, InscripcionRespuesta } from "@/types";
@@ -52,7 +52,13 @@ export async function POST(request: Request) {
 	try {
 		// El precio se recalcula en el servidor: nunca se confía en el total del cliente.
 		const cupo = tipo.cupo ? await obtenerCupo() : null;
-		const precioUnitario = calcularPrecioUnitario(tipo, cupo);
+		if (entradaCerrada(tipo, cupo)) {
+			return responder(
+				{ ok: false, error: `Se agotó el cupo de ${tipo.nombre}. Elegí otra entrada.`, campos: { tipoEntrada: "Cupo agotado" } },
+				409,
+			);
+		}
+		const precioUnitario = calcularPrecioUnitario(tipo);
 		const id = generarIdInscripcion();
 
 		const registro: InscripcionRegistro = {
@@ -87,6 +93,12 @@ export async function POST(request: Request) {
 		await guardarInscripcion(registro, datos.comprobante, emailVerificationToken, urlSitio.origin);
 		return responder({ ok: true, id, total: registro.total }, 201);
 	} catch (error) {
+		if (error instanceof Error && error.message === "CUPO_COMPLETO") {
+			return responder(
+				{ ok: false, error: `Se completó el cupo de ${tipo.nombre}. Elegí otra entrada.`, campos: { tipoEntrada: "Cupo agotado" } },
+				409,
+			);
+		}
 		console.error("[inscripcion] Error al guardar", error);
 		return responder(
 			{ ok: false, error: "No pudimos registrar tu inscripción. Intentá de nuevo en unos minutos." },

@@ -1,15 +1,15 @@
-import { AtSign, Mail, MapPin, MessageCircle } from "lucide-react";
+import { AtSign, Mail, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { LogoImage } from "@/components/ui/logo-image";
-import { ANIO_SITIO, VERSION_SITIO, evento } from "@/data/evento";
+import { ANIO_SITIO, evento } from "@/data/evento";
 import { logos, navegacion } from "@/data/sitio";
 
 const linksFooter = [...navegacion, { href: "/inscripcion", label: "Inscripción" }];
 
 /** Footer Systemium (misma línea visual que Aquatiempo). */
 export default function Footer() {
-	const { contacto, sede } = evento;
+	const { contacto } = evento;
 
 	return (
 		<footer className="relative mt-24 overflow-hidden border-t border-border">
@@ -63,16 +63,6 @@ export default function Footer() {
 					<div>
 						<p className="text-xs tracking-[0.26em] text-foreground/50">CONTACTO</p>
 						<ul className="mt-4 space-y-3 text-sm text-foreground/65">
-							<li>
-								<a href={sede.mapsUrl} target="_blank" rel="noreferrer" className="inline-flex gap-2 hover:text-foreground">
-									<MapPin className="mt-0.5 size-4 shrink-0 text-brand" />
-									<span>
-										{sede.nombre}
-										<br />
-										{sede.ciudad}
-									</span>
-								</a>
-							</li>
 							{contacto.whatsapp && (
 								<li>
 									<a href={`https://wa.me/${contacto.whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-foreground">
@@ -109,11 +99,12 @@ export default function Footer() {
 						<p>
 							© {ANIO_SITIO} {evento.organizador} — Todos los derechos reservados.
 						</p>
-						<p className="font-medium text-foreground/75">Versión {VERSION_SITIO}</p>
 						<p>
-							Diseño &amp; desarrollo: <span className="font-semibold text-foreground">Systemium</span>
+							Diseño &amp; desarrollo web: <span className="font-semibold text-foreground">Bautista Heyde</span>
 							<span className="mx-2 text-foreground/30">•</span>
-							Software original. Prohibida su reproducción.
+							<a href="mailto:bautistaheyde@hotmail.com" className="underline-offset-4 hover:text-foreground hover:underline">
+								bautistaheyde@hotmail.com
+							</a>
 						</p>
 					</div>
 				</div>

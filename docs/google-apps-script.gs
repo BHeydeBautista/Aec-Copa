@@ -18,8 +18,9 @@
  *     Después, recargá la Sheet para que aparezca el menú "AEC Inscripciones".
  *
  * La organización revisa el comprobante en Drive y usa el menú "AEC Inscripciones"
- * de la Sheet para aprobar/rechazar. Solo las aprobadas ocupan el cupo promocional;
- * la aprobación envía por email la entrada con QR verificable. No cambies "estado"
+ * de la Sheet para aprobar/rechazar. Los pagos pendientes y aprobados reservan cupo
+ * promocional; al rechazar un pendiente, se libera. La aprobación envía por email la entrada
+ * con QR verificable. No cambies "estado"
  * manualmente: usá el menú para que el email y el token del QR queden sincronizados.
  * El código de email vence en 10 minutos, permite 5 intentos y limita los reenvíos
  * a uno por minuto y limita el formulario a 80 envíos diarios. El token verificado
@@ -31,7 +32,7 @@ const SECRET = "PEGAR_CLAVE_SECRETA";
 const HOJA = "Inscripciones";
 const MAX_CODIGOS_DIARIOS = 80;
 const TIPO_CUPO_PROMOCIONAL = "pileta-challenger";
-const CUPO_PROMOCIONAL = 60;
+const CUPO_PROMOCIONAL = 40;
 const PRECIO_PROMOCIONAL = 15000;
 const PRECIO_GENERAL = 20000;
 
@@ -194,11 +195,14 @@ function aprobarPagoSeleccionado() {
     const precioActual = Number(valorFila_(contexto, "precioUnitario")) || 0;
     if (tipo === TIPO_CUPO_PROMOCIONAL) {
       const cuposAprobados = contarCuposPromocionalesAprobados_(contexto.hoja, contexto.indices);
-      const precioEsperado = cuposAprobados + cantidad > CUPO_PROMOCIONAL ? PRECIO_GENERAL : PRECIO_PROMOCIONAL;
-      if (precioActual < precioEsperado) {
+      if (cuposAprobados + cantidad > CUPO_PROMOCIONAL) {
         throw new Error(
-          "El cupo a precio promocional ya se completó. Revisá si corresponde cobrar la diferencia antes de aprobar el pago.",
+          "El cupo de Pileta Challenger (" + CUPO_PROMOCIONAL + " aprobados) ya está completo: no se puede aprobar esta inscripción. " +
+            "Coordiná con la persona el cambio a Pileta General o la devolución, y rechazá esta fila.",
         );
+      }
+      if (precioActual < PRECIO_PROMOCIONAL) {
+        throw new Error("El precio registrado es menor al de Pileta Challenger. Revisalo antes de aprobar.");
       }
     }
 
@@ -284,6 +288,22 @@ function doPost(e) {
     try {
       if (!tokenEmail || CacheService.getScriptCache().get(claveTokenEmail_(r.email)) !== tokenEmail) {
         return json_({ ok: false, error: "El email no está verificado o venció la verificación. Verificalo nuevamente." });
+      }
+
+      if (r.tipoEntrada === TIPO_CUPO_PROMOCIONAL) {
+        const hojaCupo = obtenerHoja_();
+        const datosCupo = hojaCupo.getDataRange().getValues();
+        const cabCupo = datosCupo.shift();
+        const iT = cabCupo.indexOf("tipoEntrada");
+        const iE = cabCupo.indexOf("estado");
+        const iC = cabCupo.indexOf("cantidad");
+        const reservados = datosCupo.reduce(function (total, fila) {
+          if (fila[iT] !== TIPO_CUPO_PROMOCIONAL || (fila[iE] !== "aprobado" && fila[iE] !== "pendiente")) return total;
+          return total + Math.max(1, Number(fila[iC]) || 1);
+        }, 0);
+        if (reservados + Math.max(1, Number(r.cantidad) || 1) > CUPO_PROMOCIONAL) {
+          return json_({ ok: false, error: "CUPO_COMPLETO" });
+        }
       }
 
       const persona = limpiarNombreArchivo_([r.nombre, r.apellido].filter(Boolean).join(" ")) || "Inscripto";
@@ -449,7 +469,11 @@ function doGet(e) {
       if (fila[iTipo] !== p.tipo || fila[iEstado] !== "aprobado") return total;
       return total + Math.max(1, Number(iCantidad >= 0 ? fila[iCantidad] : 1) || 1);
     }, 0);
-    return json_({ ocupados: ocupados });
+    const pendientes = datos.reduce(function (total, fila) {
+      if (fila[iTipo] !== p.tipo || fila[iEstado] !== "pendiente") return total;
+      return total + Math.max(1, Number(iCantidad >= 0 ? fila[iCantidad] : 1) || 1);
+    }, 0);
+    return json_({ ocupados: ocupados, pendientes: pendientes });
   }
 
   if (p.action === "ticket") return obtenerEntrada_(p);

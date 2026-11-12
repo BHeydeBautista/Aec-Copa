@@ -39,6 +39,8 @@ export interface Ticket {
 	sello: string | null;
 	destacado: boolean;
 	pocosDisponibles: boolean;
+	/** Cupo completo: la entrada ya no se puede elegir. */
+	agotado: boolean;
 }
 
 /**
@@ -52,7 +54,8 @@ export function armarTicket(
 	formatear: (n: number) => string,
 ): Ticket {
 	const cupoPropio = tipo.cupo && cupo?.tipo === tipo.id ? cupo : null;
-	const total = calcularPrecioUnitario(tipo, cupoPropio);
+	const total = calcularPrecioUnitario(tipo);
+	const agotado = Boolean(cupoPropio?.agotado);
 	const subtotal = Math.max(general.precio, total);
 	const descuento = subtotal - total;
 	const orden = `AEC-${(hash(tipo.id) % 90000) + 10000}`;
@@ -64,7 +67,7 @@ export function armarTicket(
 	if (tipo.cupo) {
 		filas.push({
 			label: "Cupo",
-			valor: cupoPropio?.agotado ? "Completo" : cupoPropio?.pocosDisponibles ? "Quedan pocos" : "Disponible",
+			valor: agotado ? "Agotado" : cupoPropio?.pocosDisponibles ? "Últimos lugares" : "Disponible",
 		});
 	}
 	if (tipo.requiereAcreditacion) filas.push({ label: "Acredita", valor: "N° socio" });
@@ -77,8 +80,9 @@ export function armarTicket(
 		subtotal,
 		descuento,
 		total,
-		sello: descuento > 0 ? `Ahorrás ${formatear(descuento)}` : cupoPropio?.agotado ? "Cupo completo" : null,
+		sello: agotado ? null : descuento > 0 ? `Ahorrás ${formatear(descuento)}` : null,
 		destacado: Boolean(tipo.destacado || tipo.requiereAcreditacion),
-		pocosDisponibles: Boolean(cupoPropio?.pocosDisponibles && !cupoPropio.agotado),
+		pocosDisponibles: Boolean(cupoPropio?.pocosDisponibles && !agotado),
+		agotado,
 	};
 }

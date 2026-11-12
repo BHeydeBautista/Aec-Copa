@@ -10,9 +10,8 @@ export type TipoEntradaId = (typeof TIPOS_ENTRADA_IDS)[number];
 export type ZonaEntrada = "pileta" | "tribuna";
 
 export interface CupoEntrada {
+	/** Máximo de inscripciones pendientes o aprobadas. Al alcanzarlo, la entrada deja de venderse. */
 	total: number;
-	/** Precio que se cobra una vez superado el cupo. */
-	precioSobreCupo: number;
 }
 
 export interface TipoEntrada {

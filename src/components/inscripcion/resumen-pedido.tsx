@@ -26,16 +26,15 @@ export function ResumenPedido({ ctrl }: { ctrl: InscripcionFormController }) {
 							{tipo.observacion && <p className="mt-2 text-xs leading-5 text-amber-200">{tipo.observacion}</p>}
 						</div>
 					</div>
-					{cupoAgotado && (
-						<p className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
-							Cupo preferencial completo: se aplica el precio general.
-						</p>
-					)}
 					<div className="mt-5 flex items-baseline justify-between border-t border-border/80 pt-5">
 						<span className="text-sm text-muted-foreground">Total</span>
 						<span className="font-display text-3xl font-extrabold tabular-nums">{formatearPrecio(total)}</span>
 					</div>
 				</>
+			) : cupoAgotado ? (
+				<p className="mt-4 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+					Se agotó el cupo de la entrada que habías elegido. Elegí otra para continuar.
+				</p>
 			) : (
 				<p className="mt-4 text-sm text-muted-foreground">Elegí una entrada para ver el total.</p>
 			)}

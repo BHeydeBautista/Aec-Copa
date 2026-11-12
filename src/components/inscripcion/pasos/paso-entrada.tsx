@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { tiposEntrada } from "@/data/entradas";
 import type { InscripcionFormController } from "@/hooks/use-inscripcion-form";
 import { formatearPrecio } from "@/lib/format";
-import { calcularPrecioUnitario } from "@/lib/precios";
+import { calcularPrecioUnitario, entradaCerrada } from "@/lib/precios";
 import { cn } from "@/lib/utils";
 
 export function PasoEntrada({ ctrl }: { ctrl: InscripcionFormController }) {
@@ -20,19 +20,22 @@ export function PasoEntrada({ ctrl }: { ctrl: InscripcionFormController }) {
 				<legend className="mb-3 text-sm font-medium">Tipo de entrada</legend>
 				<div className="grid gap-3 sm:grid-cols-2" role="radiogroup">
 					{tiposEntrada.map((t) => {
-						const precio = calcularPrecioUnitario(t, t.cupo ? cupo : null);
-						const elegido = tipo?.id === t.id;
+						const precio = calcularPrecioUnitario(t);
+						const cerrada = entradaCerrada(t, cupo);
+						const elegido = !cerrada && tipo?.id === t.id;
 						return (
 							<label
 								key={t.id}
 								className={cn(
-									"relative flex cursor-pointer flex-col gap-1 rounded-2xl border p-4 transition-all",
-									elegido
-										? "border-brand-2 bg-brand-2/[0.07] shadow-[0_0_0_1px_var(--brand-2)]"
-										: "border-border bg-surface-2/40 hover:border-brand/40",
+									"relative flex flex-col gap-1 rounded-2xl border p-4 transition-all",
+									cerrada
+										? "cursor-not-allowed border-border bg-surface-2/20 opacity-55"
+										: elegido
+											? "cursor-pointer border-brand-2 bg-brand-2/[0.07] shadow-[0_0_0_1px_var(--brand-2)]"
+											: "cursor-pointer border-border bg-surface-2/40 hover:border-brand/40",
 								)}
 							>
-								<input type="radio" value={t.id} className="sr-only" {...register("tipoEntrada")} />
+								<input type="radio" value={t.id} className="sr-only" disabled={cerrada} {...register("tipoEntrada")} />
 								<span className="flex items-center justify-between gap-2">
 									<span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">{t.zona}</span>
 									<span
@@ -46,8 +49,13 @@ export function PasoEntrada({ ctrl }: { ctrl: InscripcionFormController }) {
 								{t.observacion && <span className="text-xs leading-5 text-amber-200">{t.observacion}</span>}
 								<span className="font-display text-xl font-bold tabular-nums">{formatearPrecio(precio)}</span>
 								{t.cupo && cupo?.tipo === t.id && (
-									<span className={cn("text-xs", cupo.pocosDisponibles && !cupo.agotado ? "font-medium text-amber-300" : "text-muted-foreground")}>
-										{cupo.agotado ? "Cupo completo: precio general" : cupo.pocosDisponibles ? "Quedan pocos cupos" : "Cupos disponibles"}
+									<span
+										className={cn(
+											"text-xs",
+											cerrada ? "font-semibold text-destructive" : cupo.pocosDisponibles ? "font-medium text-amber-300" : "text-muted-foreground",
+										)}
+									>
+										{cerrada ? "Cupo agotado" : cupo.pocosDisponibles ? "Se están por acabar los cupos" : "Cupos disponibles"}
 									</span>
 								)}
 							</label>
