@@ -44,7 +44,7 @@ export default function Precios() {
 	};
 
 	return (
-		<section ref={raizRef} id="precios" className="relative scroll-mt-20 py-24 sm:py-32">
+		<section ref={raizRef} className="relative py-24 sm:py-32">
 			<div className="mx-auto max-w-5xl px-4 sm:px-6">
 				<div className="mx-auto max-w-xl text-center">
 					<p className="font-marcador text-lg font-semibold tracking-[0.18em] text-brand uppercase">Entradas · Clínica Meolans</p>
@@ -55,9 +55,10 @@ export default function Precios() {
 				</div>
 
 				<div
+					id="precios"
 					role="radiogroup"
 					aria-label="Zona"
-					className="mx-auto mt-8 flex w-fit items-center rounded-md border border-border bg-surface p-1"
+					className="mx-auto mt-8 flex w-fit scroll-mt-24 items-center rounded-md border border-border bg-surface p-1"
 				>
 					{ZONAS.map((z, i) => {
 						const activa = zona === z.id;
