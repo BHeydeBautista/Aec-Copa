@@ -62,9 +62,7 @@ export function PasoEntrada({ ctrl }: { ctrl: InscripcionFormController }) {
 									>
 										{cerrada
 											? "Cupos cerrados por el momento"
-											: cupo.pocosDisponibles
-												? "Se están por acabar los cupos de pileta"
-												: "Cupos disponibles"}
+											: `Quedan ${cupo.disponibles} de ${t.cupo.total} cupos de pileta`}
 									</span>
 								)}
 							</label>

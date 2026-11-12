@@ -69,9 +69,9 @@ export function armarTicket(
 			label: "Cupo",
 			valor: agotado
 				? "Cerrado por el momento"
-				: cupoPropio?.pocosDisponibles
-					? "Últimos lugares"
-					: "Disponible",
+				: cupoPropio
+					? `Quedan ${cupoPropio.disponibles} de ${tipo.cupo.total}`
+					: "Consultando disponibilidad",
 		});
 	}
 	if (tipo.requiereAcreditacion) filas.push({ label: "Acredita", valor: "N° socio" });

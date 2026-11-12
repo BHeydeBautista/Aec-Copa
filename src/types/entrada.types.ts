@@ -31,9 +31,10 @@ export interface TipoEntrada {
 	requiereAcreditacion?: boolean;
 }
 
-/** Estado público del cupo: nunca expone la cantidad exacta de lugares. */
+/** Estado público del cupo compartido de pileta. */
 export interface EstadoCupo {
 	tipo: ZonaEntrada;
+	disponibles: number;
 	agotado: boolean;
 	pocosDisponibles: boolean;
 }

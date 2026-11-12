@@ -89,14 +89,26 @@ export async function POST(request: Request) {
 			estado: "pendiente",
 		};
 
-		const origenSitio = process.env.NEXT_PUBLIC_SITE_URL || request.headers.get("origin") || new URL(request.url).origin;
+		const sitioConfigurado = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+		if (process.env.NODE_ENV === "production" && !sitioConfigurado) {
+			throw new Error("SITE_URL_NOT_CONFIGURED");
+		}
+		const origenSitio = sitioConfigurado || request.headers.get("origin") || new URL(request.url).origin;
 		const urlSitio = new URL(origenSitio);
-		if (urlSitio.protocol !== "https:" && urlSitio.hostname !== "localhost" && urlSitio.hostname !== "127.0.0.1") {
+		const esLocalhost = urlSitio.hostname === "localhost" || urlSitio.hostname === "127.0.0.1";
+		if ((urlSitio.protocol !== "https:" && !esLocalhost) || (process.env.NODE_ENV === "production" && esLocalhost)) {
 			throw new Error("La URL del sitio debe usar HTTPS.");
 		}
 		await guardarInscripcion(registro, datos.comprobante, emailVerificationToken, urlSitio.origin);
 		return responder({ ok: true, id, total: registro.total }, 201);
 	} catch (error) {
+		if (error instanceof Error && error.message === "SITE_URL_NOT_CONFIGURED") {
+			console.error("[inscripcion] Falta configurar NEXT_PUBLIC_SITE_URL en producción.");
+			return responder(
+				{ ok: false, error: "La inscripción está temporalmente deshabilitada. El sitio necesita configurar su URL pública." },
+				503,
+			);
+		}
 		if (error instanceof Error && error.message === "CUPO_COMPLETO") {
 			return responder(
 				{

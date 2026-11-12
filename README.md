@@ -99,6 +99,7 @@ Se pausa cuando el hero sale de pantalla y respeta `prefers-reduced-motion`.
   El Apps Script envía un código de seis dígitos con GmailApp; se verifica antes de habilitar el envío y el token
   se valida nuevamente al guardar. El precio se recalcula siempre en el servidor y el cupo compartido de Pileta General
   y Pileta Challenger cuenta las inscripciones `pendiente` y `aprobado` (máximo 40); Tribuna no cuenta.
+- La web muestra cuántos lugares compartidos quedan en las entradas de pileta y en el selector del formulario.
 - Para confirmar pagos, revisá el comprobante desde el enlace de Drive en la Sheet y usá
   el menú **AEC Inscripciones → Aprobar pago y enviar entrada**. La inscripción pendiente ya
   reserva su lugar; al aprobarla, ese lugar queda confirmado y se manda por email el ticket
@@ -107,7 +108,9 @@ Se pausa cuando el hero sale de pantalla y respeta `prefers-reduced-motion`.
   cerrados por el momento. Después de actualizar `docs/google-apps-script.gs`, publicá una nueva
   versión de la implementación web para que el bloqueo simultáneo y el conteo compartido entren en vigor.
 - Configurá `NEXT_PUBLIC_SITE_URL` con el dominio público en Vercel para que los enlaces
-  del ticket y del QR apunten al sitio correcto.
+  del ticket y del QR apunten al sitio correcto (por ejemplo, `https://aeccopa.vercel.app`).
+  Es obligatoria en producción; el servidor rechaza valores localhost para no guardar enlaces
+  locales en nuevas inscripciones.
 - No se usa Google Forms: el formulario propio admite el comprobante y valida el acceso a la bandeja de email
   en el mismo flujo. Esta validación no acredita la identidad legal de la persona.
 

@@ -9,6 +9,7 @@ export const tiposEntrada: TipoEntrada[] = [
 		nombre: "Pileta General",
 		descripcion: "Participación en la clínica dentro del agua.",
 		precio: 20000,
+		etiqueta: "Cupo limitado",
 		beneficios: ["Clínica completa en pileta", "Corrección técnica", "Acceso a tribuna"],
 		cupo: { total: CUPO_PILETA_TOTAL },
 		maxCantidad: 1,

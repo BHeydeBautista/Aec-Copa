@@ -100,9 +100,21 @@ export default function Precios() {
 					))}
 				</div>
 
-				{impreso === "pileta" && cupo?.agotado && (
-					<p className="mx-auto mt-8 max-w-2xl rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-center text-sm font-medium text-destructive" role="status">
-						Los cupos de pileta están cerrados por el momento.
+				{impreso === "pileta" && cupo && (
+					<p
+						className={cn(
+							"mx-auto mt-8 max-w-2xl rounded-xl border px-4 py-3 text-center text-sm font-medium",
+							cupo.agotado
+								? "border-destructive/25 bg-destructive/10 text-destructive"
+								: cupo.pocosDisponibles
+									? "border-amber-400/30 bg-amber-300/10 text-amber-200"
+									: "border-brand/20 bg-brand/5 text-muted-foreground",
+						)}
+						role="status"
+					>
+						{cupo.agotado
+							? "Los cupos de pileta están cerrados por el momento."
+							: `Quedan ${cupo.disponibles} de 40 cupos compartidos entre Pileta General y Pileta Challenger.`}
 					</p>
 				)}
 

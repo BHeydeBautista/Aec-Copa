@@ -89,10 +89,10 @@ export async function obtenerCupo(): Promise<EstadoCupo> {
 	// Solo en desarrollo: CUPO_SIMULAR_APROBADOS permite probar estados de disponibilidad.
 	const simulados = process.env.NODE_ENV !== "production" ? process.env.CUPO_SIMULAR_APROBADOS : undefined;
 	const ocupados = simulados ? Number(simulados) : SCRIPT_URL ? await contarEnGoogle() : await contarLocal();
-	const disponibles = CUPO_PILETA_TOTAL - ocupados;
-	// La cantidad exacta queda en el servidor; al sitio solo llega una señal de disponibilidad baja.
+	const disponibles = Math.max(0, CUPO_PILETA_TOTAL - ocupados);
 	return {
 		tipo: CUPO_TIPO,
+		disponibles,
 		agotado: disponibles <= 0,
 		pocosDisponibles: disponibles > 0 && disponibles <= UMBRAL_POCOS_CUPOS,
 	};
