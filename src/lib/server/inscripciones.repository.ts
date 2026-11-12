@@ -21,7 +21,6 @@ const DIR_COMPROBANTES = path.join(DIR_DATOS, "comprobantes");
 
 const TIPOS_CUPO_PILETA = ["pileta-general", "pileta-challenger"] as const;
 const CUPO_TIPO = "pileta" as const;
-const UMBRAL_POCOS_CUPOS = 10;
 
 export function generarIdInscripcion(): string {
 	const tiempo = Date.now().toString(36).slice(-4).toUpperCase();
@@ -89,12 +88,9 @@ export async function obtenerCupo(): Promise<EstadoCupo> {
 	// Solo en desarrollo: CUPO_SIMULAR_APROBADOS simula lugares reservados para probar disponibilidad.
 	const simulados = process.env.NODE_ENV !== "production" ? process.env.CUPO_SIMULAR_APROBADOS : undefined;
 	const ocupados = simulados ? Number(simulados) : SCRIPT_URL ? await contarEnGoogle() : await contarLocal();
-	const disponibles = Math.max(0, CUPO_PILETA_TOTAL - ocupados);
 	return {
 		tipo: CUPO_TIPO,
-		disponibles,
-		agotado: disponibles <= 0,
-		pocosDisponibles: disponibles > 0 && disponibles <= UMBRAL_POCOS_CUPOS,
+		agotado: ocupados >= CUPO_PILETA_TOTAL,
 	};
 }
 

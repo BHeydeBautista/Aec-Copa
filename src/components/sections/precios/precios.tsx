@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, type KeyboardEvent } from "react";
-import { CUPO_PILETA_TOTAL, tiposEntrada } from "@/data/entradas";
+import { tiposEntrada } from "@/data/entradas";
 import { useCupo } from "@/hooks/use-cupo";
 import { useImpresionTickets } from "@/hooks/use-impresion-tickets";
 import { formatearPrecio } from "@/lib/format";
@@ -100,21 +100,12 @@ export default function Precios() {
 					))}
 				</div>
 
-				{impreso === "pileta" && cupo && (
+				{impreso === "pileta" && cupo?.agotado && (
 					<p
-						className={cn(
-							"mx-auto mt-8 max-w-2xl rounded-xl border px-4 py-3 text-center text-sm font-medium",
-							cupo.agotado
-								? "border-destructive/25 bg-destructive/10 text-destructive"
-								: cupo.pocosDisponibles
-									? "border-amber-400/30 bg-amber-300/10 text-amber-200"
-									: "border-brand/20 bg-brand/5 text-muted-foreground",
-						)}
+						className="mx-auto mt-8 max-w-2xl rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-center text-sm font-medium text-destructive"
 						role="status"
 					>
-						{cupo.agotado
-							? "Los cupos de pileta están cerrados por el momento."
-							: `Quedan ${cupo.disponibles} de ${CUPO_PILETA_TOTAL} cupos compartidos entre Pileta General y Pileta Challenger.`}
+						Los cupos de pileta están cerrados por el momento.
 					</p>
 				)}
 

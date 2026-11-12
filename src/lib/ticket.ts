@@ -38,7 +38,6 @@ export interface Ticket {
 	/** Texto del sello (ej: "Ahorrás $5.000"); null = sin sello. */
 	sello: string | null;
 	destacado: boolean;
-	pocosDisponibles: boolean;
 	/** Cupo completo: la entrada ya no se puede elegir. */
 	agotado: boolean;
 }
@@ -67,11 +66,7 @@ export function armarTicket(
 	if (tipo.cupo) {
 		filas.push({
 			label: "Cupo",
-			valor: agotado
-				? "Cerrado por el momento"
-				: cupoPropio
-					? `Quedan ${cupoPropio.disponibles} de ${tipo.cupo.total}`
-					: "Consultando disponibilidad",
+			valor: agotado ? "Cerrado por el momento" : "Cupo limitado",
 		});
 	}
 	if (tipo.requiereAcreditacion) filas.push({ label: "Acredita", valor: "N° socio" });
@@ -86,7 +81,6 @@ export function armarTicket(
 		total,
 		sello: agotado ? null : descuento > 0 ? `Ahorrás ${formatear(descuento)}` : null,
 		destacado: Boolean(tipo.destacado || tipo.requiereAcreditacion),
-		pocosDisponibles: Boolean(cupoPropio?.pocosDisponibles && !agotado),
 		agotado,
 	};
 }

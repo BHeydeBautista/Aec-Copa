@@ -22,24 +22,6 @@ const MASCARA_TAM = "12px 12px, 12px 12px, 100% calc(100% - 12px), 12px 12px, 12
 const MASCARA_POS = "0 0, 0 0, 0 6px, 0 100%, 0 100%";
 const MASCARA_REP = "repeat-x, repeat-x, no-repeat, repeat-x, repeat-x";
 
-/**
- * Ticket "gastado" (quedan pocos cupos): papel amarillento, tinta que se va borrando en manchas,
- * dobleces y bordes sucios, como un ticket térmico que pasó de mano en mano.
- */
-const PAPEL_GASTADO = "#efe5c9";
-const DESGASTE = [
-	// Dobleces
-	"linear-gradient(96deg, transparent 49.5%, rgb(110 88 44 / 0.28) 50%, rgb(255 250 235 / 0.5) 50.4%, transparent 51%)",
-	"linear-gradient(183deg, transparent 37.6%, rgb(110 88 44 / 0.22) 38%, rgb(255 250 235 / 0.45) 38.4%, transparent 38.9%)",
-	// Tinta borrada (manchas del color del papel sobre el texto)
-	"radial-gradient(60% 13% at 18% 27%, rgb(239 229 201 / 0.82), transparent 70%)",
-	"radial-gradient(45% 10% at 82% 49%, rgb(239 229 201 / 0.78), transparent 70%)",
-	"radial-gradient(55% 9% at 34% 66%, rgb(239 229 201 / 0.7), transparent 70%)",
-	"radial-gradient(40% 8% at 70% 16%, rgb(239 229 201 / 0.65), transparent 70%)",
-	// Bordes sucios
-	"radial-gradient(120% 90% at 50% 50%, transparent 62%, rgb(120 92 40 / 0.22) 100%)",
-].join(", ");
-
 function estiloFase(fase: FaseImpresion, delay: number, imprimirMs: number, arrancarMs: number): CSSProperties {
 	switch (fase) {
 		case "arrancar":
@@ -88,7 +70,6 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 		WebkitMaskRepeat: MASCARA_REP,
 		// Líneas de escaneo del papel térmico.
 		backgroundImage: "repeating-linear-gradient(180deg, rgb(24 30 46 / 0.04) 0 1px, transparent 1px 4px)",
-		...(ticket.pocosDisponibles ? { backgroundColor: PAPEL_GASTADO } : null),
 		...estiloFase(fase, delay, imprimirMs, arrancarMs),
 	};
 
@@ -97,7 +78,6 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 			className={cn(
 				"w-full max-w-[20rem] transition-transform duration-200 ease-out",
 				ticket.agotado ? "opacity-70 grayscale" : "hover:-translate-y-1",
-				ticket.pocosDisponibles && "-rotate-[1.2deg] hover:rotate-0",
 			)}
 			style={{ filter: "drop-shadow(0 1px 1px rgb(0 0 0 / 0.25)) drop-shadow(0 14px 18px rgb(0 0 0 / 0.35))" }}
 		>
@@ -154,7 +134,7 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 						<li key={f.label} className="flex items-baseline gap-1.5">
 							<span className="shrink-0">{f.label}</span>
 							<span aria-hidden className="min-w-3 flex-1 -translate-y-[0.28em] border-b border-dotted border-current/35" />
-							<span className={cn("shrink-0 tabular-nums", (ticket.pocosDisponibles || ticket.agotado) && f.label === "Cupo" && "font-semibold text-[#cf3a44]")}>
+							<span className={cn("shrink-0 tabular-nums", ticket.agotado && f.label === "Cupo" && "font-semibold text-[#cf3a44]")}>
 								{f.valor}
 							</span>
 						</li>
@@ -193,12 +173,6 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 					</p>
 				)}
 
-				{ticket.pocosDisponibles && (
-					<p className="relative z-10 mt-4 border-y-2 border-dashed border-[#cf3a44]/70 py-1.5 text-center text-[11px] font-bold tracking-[0.14em] text-[#cf3a44] uppercase">
-						¡Se están por acabar los cupos!
-					</p>
-				)}
-
 				{ticket.agotado ? (
 					<p className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-md border border-dashed border-current/40 text-xs font-semibold tracking-[0.16em] uppercase">
 						Cupos cerrados por el momento
@@ -224,9 +198,6 @@ export function TicketPrecio({ ticket, fase, delay, indice, formatear, imprimirM
 					<p className="mt-1.5 text-center text-[11px] tracking-[0.24em] text-[#1b2233]/60 uppercase">{ticket.codigo}</p>
 				</div>
 
-				{ticket.pocosDisponibles && (
-					<div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: DESGASTE }} />
-				)}
 				{ticket.agotado && (
 					<div aria-hidden className="pointer-events-none absolute inset-0 grid place-items-center">
 						<span className="-rotate-[18deg] border-4 border-[#cf3a44] px-4 py-1 font-marcador text-5xl font-extrabold tracking-[0.12em] text-[#cf3a44] uppercase opacity-80">

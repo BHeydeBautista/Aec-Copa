@@ -35,7 +35,7 @@ export const preguntasFrecuentes: PreguntaFrecuente[] = [
 		id: "cupo",
 		pregunta: "¿Qué pasa cuando se completan los cupos de pileta?",
 		respuesta:
-			"Pileta General y Pileta Challenger comparten un máximo de 40 lugares. Cada inscripción pendiente reserva un lugar; al aprobarse, sigue ocupado y, si se rechaza, se libera. Cuando se reservan los 40, se cierran ambas entradas de pileta.",
+			"Pileta General y Pileta Challenger comparten un cupo. Cada inscripción pendiente reserva un lugar; al aprobarse, sigue ocupado y, si se rechaza, se libera. Cuando se completa, se cierran ambas entradas de pileta.",
 	},
 	{
 		id: "socios",

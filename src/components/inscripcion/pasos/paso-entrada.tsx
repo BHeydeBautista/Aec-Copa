@@ -57,12 +57,12 @@ export function PasoEntrada({ ctrl }: { ctrl: InscripcionFormController }) {
 									<span
 										className={cn(
 											"text-xs",
-											cerrada ? "font-semibold text-destructive" : cupo.pocosDisponibles ? "font-medium text-amber-300" : "text-muted-foreground",
+											cerrada ? "font-semibold text-destructive" : "text-muted-foreground",
 										)}
 									>
 										{cerrada
 											? "Cupos cerrados por el momento"
-											: `Quedan ${cupo.disponibles} de ${t.cupo.total} cupos de pileta`}
+											: "Cupo limitado"}
 									</span>
 								)}
 							</label>
