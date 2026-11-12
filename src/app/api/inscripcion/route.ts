@@ -109,6 +109,13 @@ export async function POST(request: Request) {
 				503,
 			);
 		}
+		if (error instanceof Error && error.message === "La URL del sitio debe usar HTTPS.") {
+			console.error("[inscripcion] NEXT_PUBLIC_SITE_URL debe usar HTTPS en producción.");
+			return responder(
+				{ ok: false, error: "La inscripción está temporalmente deshabilitada por un problema de configuración. Avisá a la organización." },
+				503,
+			);
+		}
 		if (error instanceof Error && error.message === "CUPO_COMPLETO") {
 			return responder(
 				{

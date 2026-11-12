@@ -43,7 +43,7 @@ export function PasoDatos({ ctrl }: { ctrl: InscripcionFormController }) {
 						error={error}
 						hint={
 							c.name === "email" && usaMicrosoftEmail
-								? "Hotmail/Outlook puede demorar o filtrar el código. Si no llega, revisá spam o probá con Gmail."
+								? "Hay una caída reportada en Outlook y otros servicios de Microsoft. Si no recibís el código, probá con Gmail o intentá más tarde."
 								: c.hint
 						}
 						opcional={c.opcional}

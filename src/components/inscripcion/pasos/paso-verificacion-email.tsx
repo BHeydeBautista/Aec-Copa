@@ -27,7 +27,7 @@ export function PasoVerificacionEmail({ ctrl }: { ctrl: InscripcionFormControlle
 
 			{usaMicrosoftEmail && (
 				<p className="rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm leading-6 text-amber-100">
-					Hotmail/Outlook puede demorar o filtrar el código. Si no llega, revisá spam o probá con Gmail.
+					Hay una caída reportada en Outlook y otros servicios de Microsoft. Si no recibís el código, probá con Gmail o intentá más tarde.
 				</p>
 			)}
 
