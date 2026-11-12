@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, type KeyboardEvent } from "react";
-import { tiposEntrada } from "@/data/entradas";
+import { CUPO_PILETA_TOTAL, tiposEntrada } from "@/data/entradas";
 import { useCupo } from "@/hooks/use-cupo";
 import { useImpresionTickets } from "@/hooks/use-impresion-tickets";
 import { formatearPrecio } from "@/lib/format";
@@ -114,7 +114,7 @@ export default function Precios() {
 					>
 						{cupo.agotado
 							? "Los cupos de pileta están cerrados por el momento."
-							: `Quedan ${cupo.disponibles} de 40 cupos compartidos entre Pileta General y Pileta Challenger.`}
+							: `Quedan ${cupo.disponibles} de ${CUPO_PILETA_TOTAL} cupos compartidos entre Pileta General y Pileta Challenger.`}
 					</p>
 				)}
 

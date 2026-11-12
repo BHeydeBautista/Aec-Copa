@@ -33,9 +33,9 @@ export const preguntasFrecuentes: PreguntaFrecuente[] = [
 	},
 	{
 		id: "cupo",
-		pregunta: "¿Qué pasa si se completa el cupo de Pileta Challenger?",
+		pregunta: "¿Qué pasa cuando se completan los cupos de pileta?",
 		respuesta:
-			"Pileta Challenger tiene cupo limitado. Los lugares se ocupan a medida que la organización aprueba los pagos; cuando se completa, esa entrada se cierra y queda disponible Pileta General.",
+			"Pileta General y Pileta Challenger comparten un máximo de 40 lugares. Cada inscripción pendiente reserva un lugar; al aprobarse, sigue ocupado y, si se rechaza, se libera. Cuando se reservan los 40, se cierran ambas entradas de pileta.",
 	},
 	{
 		id: "socios",

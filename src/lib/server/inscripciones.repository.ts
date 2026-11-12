@@ -86,7 +86,7 @@ export async function gestionarVerificacionEmail(
 
 export async function obtenerCupo(): Promise<EstadoCupo> {
 	// Los pagos pendientes reservan lugar igual que los aprobados; al rechazar un pendiente, se libera.
-	// Solo en desarrollo: CUPO_SIMULAR_APROBADOS permite probar estados de disponibilidad.
+	// Solo en desarrollo: CUPO_SIMULAR_APROBADOS simula lugares reservados para probar disponibilidad.
 	const simulados = process.env.NODE_ENV !== "production" ? process.env.CUPO_SIMULAR_APROBADOS : undefined;
 	const ocupados = simulados ? Number(simulados) : SCRIPT_URL ? await contarEnGoogle() : await contarLocal();
 	const disponibles = Math.max(0, CUPO_PILETA_TOTAL - ocupados);
