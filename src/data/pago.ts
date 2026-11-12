@@ -25,7 +25,7 @@ export const configuracionPago: ConfiguracionPago = {
 			habilitado: false, // se habilita al cargar linkMercadoPago
 		},
 	],
-	comprobanteMaxMb: 5,
+	comprobanteMaxMb: 4,
 	comprobanteFormatos: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
 };
 

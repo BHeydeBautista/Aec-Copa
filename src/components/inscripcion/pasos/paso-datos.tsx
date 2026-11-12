@@ -28,6 +28,8 @@ const CAMPOS: Campo[] = [
 
 export function PasoDatos({ ctrl }: { ctrl: InscripcionFormController }) {
 	const { register, formState } = ctrl.form;
+	const emailDomain = ctrl.emailNormalizado.split("@").at(-1) ?? "";
+	const usaMicrosoftEmail = /^(hotmail|outlook|live|msn)\.[a-z0-9.-]+$/.test(emailDomain);
 
 	return (
 		<div className="grid gap-5 sm:grid-cols-2">
@@ -39,7 +41,11 @@ export function PasoDatos({ ctrl }: { ctrl: InscripcionFormController }) {
 						id={c.name}
 						label={c.label}
 						error={error}
-						hint={c.hint}
+						hint={
+							c.name === "email" && usaMicrosoftEmail
+								? "Hotmail/Outlook puede demorar o filtrar el código. Si no llega, revisá spam o probá con Gmail."
+								: c.hint
+						}
 						opcional={c.opcional}
 						className={c.ancho ? "sm:col-span-2" : undefined}
 					>

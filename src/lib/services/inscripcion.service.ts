@@ -47,6 +47,9 @@ export async function enviarInscripcion(valores: InscripcionFormValues, tokenEma
 
 	try {
 		const res = await fetch("/api/inscripcion", { method: "POST", body });
+		if (res.status === 413) {
+			return { ok: false, error: "El comprobante supera el límite de subida. Reducilo a 4 MB o menos e intentá de nuevo." };
+		}
 		return (await res.json()) as InscripcionRespuesta;
 	} catch {
 		return { ok: false, error: "No pudimos conectar con el servidor. Revisá tu conexión e intentá de nuevo." };
