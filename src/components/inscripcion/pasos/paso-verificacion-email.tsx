@@ -7,6 +7,8 @@ import type { InscripcionFormController } from "@/hooks/use-inscripcion-form";
 
 export function PasoVerificacionEmail({ ctrl }: { ctrl: InscripcionFormController }) {
 	const { codigoEmail, setCodigoEmail, emailNormalizado, errorVerificacion, reenviarCodigoEmail } = ctrl;
+	const emailDomain = emailNormalizado.split("@").at(-1) ?? "";
+	const usaMicrosoftEmail = /^(hotmail|outlook|live|msn)\.[a-z0-9.-]+$/.test(emailDomain);
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -22,6 +24,12 @@ export function PasoVerificacionEmail({ ctrl }: { ctrl: InscripcionFormControlle
 					</p>
 				</div>
 			</div>
+
+			{usaMicrosoftEmail && (
+				<p className="rounded-lg border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm leading-6 text-amber-100">
+					Hotmail/Outlook puede demorar o filtrar el código. Si no llega, revisá spam o probá con Gmail.
+				</p>
+			)}
 
 			<Field id="codigoEmail" label="Código de verificación" error={errorVerificacion} hint="Ingresá los 6 números del mensaje.">
 				<Input
